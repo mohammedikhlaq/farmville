@@ -1,97 +1,430 @@
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-	<Meta name="ExplicitAutoJoints">true</Meta>
-	<External>null</External>
-	<External>nil</External>
-	<Item class="DataModel" referent="ROOT">
-		<Properties>
-			<BinaryString name="Tags"></BinaryString>
-		</Properties>
+<roblox version="4">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <float name="Brightness">2</float>
+      <float name="ClockTime">10</float>
+      <bool name="GlobalShadows">true</bool>
+    </Properties>
+  </Item>
+  <Item class="Players" referent="1">
+    <Properties>
+      <string name="Name">Players</string>
+      <bool name="CharacterAutoLoads">false</bool>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="2">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+    <Item class="Folder" referent="3">
+      <Properties>
+        <string name="Name">GameModules</string>
+      </Properties>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">AnimalData</string>
+          <string name="Source"><![CDATA[-- AnimalData ModuleScript
+-- Location: ReplicatedStorage > GameModules > AnimalData
+-- Farm animal definitions for Adam And Eshaals Farm
 
-		<Item class="Workspace" referent="WS">
-			<Properties>
-				<string name="Name">Workspace</string>
-			</Properties>
-			<Item class="Terrain" referent="TRN">
-				<Properties>
-					<string name="Name">Terrain</string>
-				</Properties>
-			</Item>
-			<Item class="Part" referent="BASE1">
-				<Properties>
-					<string name="Name">Baseplate</string>
-					<bool name="Anchored">true</bool>
-					<CoordinateFrame name="CFrame">
-						<X>0</X><Y>-10</Y><Z>0</Z>
-						<R00>1</R00><R01>0</R01><R02>0</R02>
-						<R10>0</R10><R11>1</R11><R12>0</R12>
-						<R20>0</R20><R21>0</R21><R22>1</R22>
-					</CoordinateFrame>
-					<Vector3 name="Size">
-						<X>2048</X><Y>20</Y><Z>2048</Z>
-					</Vector3>
-				</Properties>
-			</Item>
-			<Item class="SpawnLocation" referent="SL1">
-				<Properties>
-					<string name="Name">SpawnLocation</string>
-					<bool name="Anchored">true</bool>
-					<bool name="Neutral">true</bool>
-					<CoordinateFrame name="CFrame">
-						<X>0</X><Y>0.5</Y><Z>0</Z>
-						<R00>1</R00><R01>0</R01><R02>0</R02>
-						<R10>0</R10><R11>1</R11><R12>0</R12>
-						<R20>0</R20><R21>0</R21><R22>1</R22>
-					</CoordinateFrame>
-					<Vector3 name="Size">
-						<X>10</X><Y>1</Y><Z>10</Z>
-					</Vector3>
-				</Properties>
-			</Item>
-		</Item>
+--[[
+    Each animal entry:
+        Name            string  – key used internally
+        DisplayName     string  – shown in UI
+        Cost            number  – coins to purchase
+        ProductName     string  – item produced
+        ProductReward   number  – coins for each product
+        XPReward        number  – XP per product collected
+        ProduceTime     number  – seconds between productions
+        FeedCost        number  – coins to feed (speeds production)
+        UnlockLevel     number  – player level required
+        Description     string  – flavour text
+        ImageId         string  – asset image ID
+]]
 
-		<Item class="Lighting" referent="LT">
-			<Properties>
-				<string name="Name">Lighting</string>
-				<Color3 name="Ambient"><R>0.5</R><G>0.5</G><B>0.5</B></Color3>
-				<float name="Brightness">2</float>
-				<float name="ClockTime">10</float>
-			</Properties>
-			<Item class="Sky" referent="SKY">
-				<Properties>
-					<string name="Name">Sky</string>
-					<string name="SkyboxBk">rbxasset://textures/sky/sky512_bk.tex</string>
-					<string name="SkyboxDn">rbxasset://textures/sky/sky512_dn.tex</string>
-					<string name="SkyboxFt">rbxasset://textures/sky/sky512_ft.tex</string>
-					<string name="SkyboxLf">rbxasset://textures/sky/sky512_lf.tex</string>
-					<string name="SkyboxRt">rbxasset://textures/sky/sky512_rt.tex</string>
-					<string name="SkyboxUp">rbxasset://textures/sky/sky512_up.tex</string>
-				</Properties>
-			</Item>
-			<Item class="Atmosphere" referent="ATM">
-				<Properties>
-					<string name="Name">Atmosphere</string>
-					<float name="Density">0.3</float>
-					<float name="Offset">0.25</float>
-					<Color3 name="Color"><R>0.784</R><G>0.863</G><B>1</B></Color3>
-					<Color3 name="Glare"><R>0</R><G>0</G><B>0</B></Color3>
-					<Color3 name="Haze"><R>0.627</R><G>0.490</G><B>0.372</B></Color3>
-					<float name="Decay">0.6</float>
-				</Properties>
-			</Item>
-		</Item>
+local AnimalData = {}
 
-		<Item class="ReplicatedStorage" referent="RS">
-			<Properties>
-				<string name="Name">ReplicatedStorage</string>
-			</Properties>
-			<Item class="Folder" referent="GMF">
-				<Properties>
-					<string name="Name">GameModules</string>
-				</Properties>
-				<Item class="ModuleScript" referent="GD">
-					<Properties>
-						<string name="Name">GameData</string>
-						<ProtectedString name="Source"><![CDATA[-- GameData ModuleScript
+AnimalData.Animals = {
+    Chicken = {
+        Name          = "Chicken",
+        DisplayName   = "Chicken",
+        Cost          = 200,
+        ProductName   = "Egg",
+        ProductReward = 30,
+        XPReward      = 2,
+        ProduceTime   = 120,   -- 2 minutes
+        FeedCost      = 15,
+        UnlockLevel   = 2,
+        Description   = "Lays eggs regularly. A farm staple!",
+        ImageId       = "rbxassetid://1033164",
+    },
+    Cow = {
+        Name          = "Cow",
+        DisplayName   = "Cow",
+        Cost          = 500,
+        ProductName   = "Milk",
+        ProductReward = 80,
+        XPReward      = 5,
+        ProduceTime   = 300,   -- 5 minutes
+        FeedCost      = 30,
+        UnlockLevel   = 5,
+        Description   = "Produces creamy milk twice a day.",
+        ImageId       = "rbxassetid://1033164",
+    },
+    Sheep = {
+        Name          = "Sheep",
+        DisplayName   = "Sheep",
+        Cost          = 450,
+        ProductName   = "Wool",
+        ProductReward = 70,
+        XPReward      = 5,
+        ProduceTime   = 240,   -- 4 minutes
+        FeedCost      = 25,
+        UnlockLevel   = 7,
+        Description   = "Fluffy wool brings good prices at market.",
+        ImageId       = "rbxassetid://1033164",
+    },
+    Pig = {
+        Name          = "Pig",
+        DisplayName   = "Pig",
+        Cost          = 600,
+        ProductName   = "Truffle",
+        ProductReward = 150,
+        XPReward      = 10,
+        ProduceTime   = 600,   -- 10 minutes
+        FeedCost      = 50,
+        UnlockLevel   = 10,
+        Description   = "Sniffs out truffles – very valuable!",
+        ImageId       = "rbxassetid://1033164",
+    },
+    Duck = {
+        Name          = "Duck",
+        DisplayName   = "Duck",
+        Cost          = 350,
+        ProductName   = "FeatherDown",
+        ProductReward = 60,
+        XPReward      = 4,
+        ProduceTime   = 180,
+        FeedCost      = 20,
+        UnlockLevel   = 4,
+        Description   = "Quacks and produces warm feather down.",
+        ImageId       = "rbxassetid://1033164",
+    },
+}
+
+function AnimalData.GetAnimal(animalName)
+    return AnimalData.Animals[animalName]
+end
+
+function AnimalData.GetUnlockedAnimals(level)
+    local result = {}
+    for _, data in pairs(AnimalData.Animals) do
+        if data.UnlockLevel <= level then
+            result[#result+1] = data
+        end
+    end
+    table.sort(result, function(a,b) return a.UnlockLevel < b.UnlockLevel end)
+    return result
+end
+
+return AnimalData
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">CropData</string>
+          <string name="Source"><![CDATA[-- CropData ModuleScript
+-- Location: ReplicatedStorage > GameModules > CropData
+-- All crop definitions for Adam And Eshaals Farm
+
+--[[
+    Each crop entry:
+        Name            string   – key used internally
+        DisplayName     string   – shown in UI
+        GrowthTime      number   – seconds to fully grow
+        SeedCost        number   – coins per seed purchase
+        HarvestReward   number   – coins earned on harvest
+        XPReward        number   – XP earned on harvest
+        UnlockLevel     number   – player level required
+        BrickColor      string   – fallback colour for plot indicator
+        Description     string   – flavour text shown in shop
+        Stages          number   – visual growth stages (1–4)
+        ImageId         string   – Decal / ImageLabel asset ID
+                                   (use free Toolbox images or replace)
+]]
+
+local CropData = {}
+
+CropData.Crops = {
+    -- ─────────────────── LEVEL 1 ───────────────────
+    Strawberry = {
+        Name          = "Strawberry",
+        DisplayName   = "Strawberry",
+        GrowthTime    = 60,
+        SeedCost      = 10,
+        HarvestReward = 35,
+        XPReward      = 1,
+        UnlockLevel   = 1,
+        BrickColor    = "Bright red",
+        Description   = "Fast and tasty! Perfect for beginners.",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",   -- placeholder (red circle)
+    },
+    Wheat = {
+        Name          = "Wheat",
+        DisplayName   = "Wheat",
+        GrowthTime    = 120,
+        SeedCost      = 15,
+        HarvestReward = 50,
+        XPReward      = 2,
+        UnlockLevel   = 1,
+        BrickColor    = "Bright yellow",
+        Description   = "A classic staple crop.",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 3 ───────────────────
+    Carrot = {
+        Name          = "Carrot",
+        DisplayName   = "Carrot",
+        GrowthTime    = 180,
+        SeedCost      = 30,
+        HarvestReward = 90,
+        XPReward      = 3,
+        UnlockLevel   = 3,
+        BrickColor    = "Bright orange",
+        Description   = "Grows underground – great crunch!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 4 ───────────────────
+    Tomato = {
+        Name          = "Tomato",
+        DisplayName   = "Tomato",
+        GrowthTime    = 240,
+        SeedCost      = 40,
+        HarvestReward = 140,
+        XPReward      = 4,
+        UnlockLevel   = 4,
+        BrickColor    = "Crimson",
+        Description   = "Red, juicy, and delicious!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 5 ───────────────────
+    Corn = {
+        Name          = "Corn",
+        DisplayName   = "Corn",
+        GrowthTime    = 300,
+        SeedCost      = 50,
+        HarvestReward = 180,
+        XPReward      = 5,
+        UnlockLevel   = 5,
+        BrickColor    = "Bright yellow",
+        Description   = "Takes time but the reward is worth it.",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 6 ───────────────────
+    Sunflower = {
+        Name          = "Sunflower",
+        DisplayName   = "Sunflower",
+        GrowthTime    = 360,
+        SeedCost      = 60,
+        HarvestReward = 250,
+        XPReward      = 6,
+        UnlockLevel   = 6,
+        BrickColor    = "Bright yellow",
+        Description   = "Brightens up the whole farm!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 8 ───────────────────
+    Pumpkin = {
+        Name          = "Pumpkin",
+        DisplayName   = "Pumpkin",
+        GrowthTime    = 480,
+        SeedCost      = 75,
+        HarvestReward = 320,
+        XPReward      = 8,
+        UnlockLevel   = 8,
+        BrickColor    = "Bright orange",
+        Description   = "The pride of the autumn harvest!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 10 ──────────────────
+    Blueberry = {
+        Name          = "Blueberry",
+        DisplayName   = "Blueberry",
+        GrowthTime    = 600,
+        SeedCost      = 100,
+        HarvestReward = 450,
+        XPReward      = 10,
+        UnlockLevel   = 10,
+        BrickColor    = "Bright blue",
+        Description   = "Premium berry – top of the range!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 15 ──────────────────
+    Watermelon = {
+        Name          = "Watermelon",
+        DisplayName   = "Watermelon",
+        GrowthTime    = 900,
+        SeedCost      = 150,
+        HarvestReward = 700,
+        XPReward      = 15,
+        UnlockLevel   = 15,
+        BrickColor    = "Bright green",
+        Description   = "Huge, refreshing, and very profitable.",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+    -- ─────────────────── LEVEL 20 ──────────────────
+    GoldenCrop = {
+        Name          = "GoldenCrop",
+        DisplayName   = "Golden Crop",
+        GrowthTime    = 1800,
+        SeedCost      = 500,
+        HarvestReward = 2500,
+        XPReward      = 50,
+        UnlockLevel   = 20,
+        BrickColor    = "Bright yellow",
+        Description   = "The rarest crop on the farm. Pure gold!",
+        Stages        = 4,
+        ImageId       = "rbxassetid://1033164",
+    },
+}
+
+-- ── Helpers ────────────────────────────────────────────────────────────────
+
+-- Return data for a single crop by name
+function CropData.GetCrop(cropName)
+    return CropData.Crops[cropName]
+end
+
+-- Return all crops available at or below `level`, sorted by UnlockLevel
+function CropData.GetUnlockedCrops(level)
+    local result = {}
+    for _, data in pairs(CropData.Crops) do
+        if data.UnlockLevel <= level then
+            result[#result+1] = data
+        end
+    end
+    table.sort(result, function(a,b) return a.UnlockLevel < b.UnlockLevel end)
+    return result
+end
+
+return CropData
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">GameConfig</string>
+          <string name="Source"><![CDATA[-- GameConfig ModuleScript
+-- Location: ReplicatedStorage > GameModules > GameConfig
+-- Shared configuration constants for Adam And Eshaals Farm
+
+local GameConfig = {
+    -- ══════════════════════════════════════════
+    --  GAME IDENTITY
+    -- ══════════════════════════════════════════
+    GameName    = "Adam And Eshaals Farm",
+    Version     = "1.0.0",
+
+    -- ══════════════════════════════════════════
+    --  STARTING VALUES
+    -- ══════════════════════════════════════════
+    StartingCoins         = 500,
+    StartingXP            = 0,
+    StartingLevel         = 1,
+    StartingUnlockedPlots = 9,   -- 3×3 grid to begin with
+
+    -- ══════════════════════════════════════════
+    --  FARM GRID
+    -- ══════════════════════════════════════════
+    FarmGridCols = 6,  -- total columns  (6×6 = 36 plots)
+    FarmGridRows = 6,  -- total rows
+    PlotSize     = 8,  -- studs per side
+    PlotGap      = 1,  -- gap between adjacent plots (studs)
+
+    -- ══════════════════════════════════════════
+    --  LEVELLING
+    -- ══════════════════════════════════════════
+    MaxLevel = 50,
+    XPForLevel = function(level)
+        return math.floor(100 * (level ^ 1.5))
+    end,
+
+    -- ══════════════════════════════════════════
+    --  PLOT UNLOCK COSTS  (coins)
+    -- Plots 1-9 are free; 10-36 must be purchased
+    -- ══════════════════════════════════════════
+    PlotUnlockCosts = {
+        [10]=200,[11]=200,[12]=200,
+        [13]=400,[14]=400,[15]=400,
+        [16]=600,[17]=600,[18]=600,
+        [19]=800,[20]=800,[21]=800,
+        [22]=1000,[23]=1000,[24]=1000,
+        [25]=1500,[26]=1500,[27]=1500,
+        [28]=2000,[29]=2000,[30]=2000,
+        [31]=3000,[32]=3000,[33]=3000,
+        [34]=5000,[35]=5000,[36]=5000,
+    },
+
+    -- ══════════════════════════════════════════
+    --  MECHANICS
+    -- ══════════════════════════════════════════
+    WaterGrowthBoost    = 0.50,  -- 50 % faster when watered
+    WiltTimeMultiplier  = 2.0,   -- wilts after 2× growthTime past ready
+    AutoSaveInterval    = 60,    -- seconds between auto-saves
+    NotificationDuration = 3,   -- seconds a toast notification stays
+
+    -- ══════════════════════════════════════════
+    --  COLOURS
+    -- ══════════════════════════════════════════
+    Colors = {
+        EmptyPlot  = Color3.fromRGB(139,115, 85),
+        PlowedPlot = Color3.fromRGB(101, 67, 33),
+        WateredPlot= Color3.fromRGB( 71, 47, 23),
+        ReadyPlot  = Color3.fromRGB( 50,200, 50),
+        WiltedPlot = Color3.fromRGB( 80, 80, 60),
+        LockedPlot = Color3.fromRGB( 60, 60, 60),
+        Coins      = Color3.fromRGB(255,200,  0),
+        XP         = Color3.fromRGB(100,200,255),
+        Success    = Color3.fromRGB( 50,200, 50),
+        Error      = Color3.fromRGB(200, 50, 50),
+        Info       = Color3.fromRGB(100,150,255),
+    },
+
+    -- ══════════════════════════════════════════
+    --  FREE ROBLOX SOUND IDs
+    --  Replace any of these with asset IDs you
+    --  find in the free Toolbox audio section.
+    -- ══════════════════════════════════════════
+    Sounds = {
+        Plant      = "rbxassetid://9120386436",  -- shovel / dig
+        Harvest    = "rbxassetid://9120386436",  -- pop / collect
+        Coins      = "rbxassetid://4612415922",  -- coin clink
+        LevelUp    = "rbxassetid://4612415922",  -- fanfare (replace)
+        Water      = "rbxassetid://4807472020",  -- water pour
+        Error      = "rbxassetid://3510466167",  -- error ding
+        Background = "rbxassetid://1843670910",  -- ambient farm music
+    },
+}
+
+return GameConfig
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="7">
+        <Properties>
+          <string name="Name">GameData</string>
+          <string name="Source"><![CDATA[-- GameData ModuleScript
 -- Location: ReplicatedStorage > GameModules > GameData
 
 local GameData = {}
@@ -156,21 +489,754 @@ function GameData.XPForLevel(level)
 end
 
 return GameData
-]]></ProtectedString>
-					</Properties>
-				</Item>
-			</Item>
-		</Item>
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="8">
+        <Properties>
+          <string name="Name">Remotes</string>
+          <string name="Source"><![CDATA[-- Remotes ModuleScript
+-- Location: ReplicatedStorage > GameModules > Remotes
+-- Creates and provides access to all RemoteEvents / RemoteFunctions
 
-		<Item class="ServerScriptService" referent="SSS">
-			<Properties>
-				<string name="Name">ServerScriptService</string>
-			</Properties>
-			<Item class="Script" referent="MAIN">
-				<Properties>
-					<string name="Name">Main</string>
-					<bool name="Disabled">false</bool>
-					<ProtectedString name="Source"><![CDATA[-- Main.server.lua  (Script in ServerScriptService)
+local RunService = game:GetService("RunService")
+local RS         = game:GetService("ReplicatedStorage")
+
+-- Ensure the Remotes folder exists (server creates it, clients wait for it)
+local remotesFolder
+if RunService:IsServer() then
+    remotesFolder = Instance.new("Folder")
+    remotesFolder.Name   = "Remotes"
+    remotesFolder.Parent = RS
+else
+    remotesFolder = RS:WaitForChild("Remotes", 15)
+end
+
+-- ── Helper ─────────────────────────────────────────────────────────────────
+
+local function getOrCreate(className, name)
+    if RunService:IsServer() then
+        local obj = Instance.new(className)
+        obj.Name   = name
+        obj.Parent = remotesFolder
+        return obj
+    else
+        return remotesFolder:WaitForChild(name, 15)
+    end
+end
+
+-- ── Remote Definitions ─────────────────────────────────────────────────────
+
+local Remotes = {
+    -- Client → Server
+    PlantCrop      = getOrCreate("RemoteEvent",    "PlantCrop"),       -- (plotId, cropName)
+    HarvestCrop    = getOrCreate("RemoteEvent",    "HarvestCrop"),     -- (plotId)
+    WaterCrop      = getOrCreate("RemoteEvent",    "WaterCrop"),       -- (plotId)
+    BuySeed        = getOrCreate("RemoteEvent",    "BuySeed"),         -- (cropName, amount)
+    BuyAnimal      = getOrCreate("RemoteEvent",    "BuyAnimal"),       -- (animalName)
+    CollectAnimal  = getOrCreate("RemoteEvent",    "CollectAnimal"),   -- (animalId)
+    FeedAnimal     = getOrCreate("RemoteEvent",    "FeedAnimal"),      -- (animalId)
+    UnlockPlot     = getOrCreate("RemoteEvent",    "UnlockPlot"),      -- (plotId)
+    SellInventory  = getOrCreate("RemoteEvent",    "SellInventory"),   -- (itemName, amount)
+    RequestData    = getOrCreate("RemoteFunction", "RequestData"),     -- () → playerData
+
+    -- Server → Client
+    UpdatePlots    = getOrCreate("RemoteEvent",    "UpdatePlots"),     -- (plotsTable)
+    UpdatePlayerData = getOrCreate("RemoteEvent",  "UpdatePlayerData"),-- (dataTable)
+    ShowNotification = getOrCreate("RemoteEvent",  "ShowNotification"),-- (msg, type)
+    PlaySound      = getOrCreate("RemoteEvent",    "PlaySound"),       -- (soundKey)
+}
+
+return Remotes
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="9">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Script" referent="10">
+      <Properties>
+        <string name="Name">DataManager</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- DataManager Server Script
+-- Location: ServerScriptService > DataManager
+-- Handles saving and loading player data via DataStoreService
+
+local DataStoreService = game:GetService("DataStoreService")
+local Players          = game:GetService("Players")
+local RunService       = game:GetService("RunService")
+local RS               = game:GetService("ReplicatedStorage")
+
+local GameConfig = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local Remotes    = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
+
+local FarmStore  = DataStoreService:GetDataStore("AdamAndEshaalsFarm_v1")
+
+-- ── Defaults ───────────────────────────────────────────────────────────────
+
+local function defaultPlots()
+    local plots = {}
+    local total = GameConfig.FarmGridCols * GameConfig.FarmGridRows
+    for i = 1, total do
+        plots[tostring(i)] = {
+            Unlocked   = (i <= GameConfig.StartingUnlockedPlots),
+            CropType   = nil,
+            PlantedAt  = nil,
+            WateredAt  = nil,
+            IsWilted   = false,
+        }
+    end
+    return plots
+end
+
+local function defaultData()
+    return {
+        Coins          = GameConfig.StartingCoins,
+        XP             = GameConfig.StartingXP,
+        Level          = GameConfig.StartingLevel,
+        Plots          = defaultPlots(),
+        Inventory      = {},   -- { [cropName] = count }
+        Animals        = {},   -- { [uuid] = animalState }
+        TotalHarvests  = 0,
+        TotalCoinsEarned = 0,
+        JoinDate       = os.time(),
+        LastSaved      = os.time(),
+    }
+end
+
+-- ── In-memory cache ────────────────────────────────────────────────────────
+
+local PlayerData = {}   -- [player] = data table
+
+-- ── Load / Save ────────────────────────────────────────────────────────────
+
+local function loadData(player)
+    local success, data = pcall(function()
+        return FarmStore:GetAsync("player_" .. player.UserId)
+    end)
+
+    if success and data then
+        -- Merge any missing default keys (handles version upgrades)
+        local defaults = defaultData()
+        for k, v in pairs(defaults) do
+            if data[k] == nil then data[k] = v end
+        end
+        -- Ensure all plots exist
+        local totalPlots = GameConfig.FarmGridCols * GameConfig.FarmGridRows
+        for i = 1, totalPlots do
+            local key = tostring(i)
+            if not data.Plots[key] then
+                data.Plots[key] = {
+                    Unlocked  = (i <= GameConfig.StartingUnlockedPlots),
+                    CropType  = nil,
+                    PlantedAt = nil,
+                    WateredAt = nil,
+                    IsWilted  = false,
+                }
+            end
+        end
+        PlayerData[player] = data
+    else
+        PlayerData[player] = defaultData()
+        if not success then
+            warn("[DataManager] Failed to load data for " .. player.Name .. ": " .. tostring(data))
+        end
+    end
+
+    -- Inform client
+    Remotes.UpdatePlayerData:FireClient(player, PlayerData[player])
+    Remotes.UpdatePlots:FireClient(player, PlayerData[player].Plots)
+
+    return PlayerData[player]
+end
+
+local function saveData(player)
+    local data = PlayerData[player]
+    if not data then return end
+    data.LastSaved = os.time()
+
+    local success, err = pcall(function()
+        FarmStore:SetAsync("player_" .. player.UserId, data)
+    end)
+
+    if not success then
+        warn("[DataManager] Failed to save data for " .. player.Name .. ": " .. tostring(err))
+    end
+end
+
+-- ── Public API (used by other server scripts) ──────────────────────────────
+
+local DataManager = {}
+
+function DataManager.Get(player)
+    return PlayerData[player]
+end
+
+function DataManager.Set(player, key, value)
+    if PlayerData[player] then
+        PlayerData[player][key] = value
+    end
+end
+
+function DataManager.AddCoins(player, amount)
+    local data = PlayerData[player]
+    if not data then return end
+    data.Coins = math.max(0, data.Coins + amount)
+    if amount > 0 then data.TotalCoinsEarned = data.TotalCoinsEarned + amount end
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end
+
+function DataManager.AddXP(player, amount)
+    local data = PlayerData[player]
+    if not data then return end
+    data.XP = data.XP + amount
+
+    -- Level-up loop
+    local levelled = false
+    while data.Level < GameConfig.MaxLevel
+        and data.XP >= GameConfig.XPForLevel(data.Level) do
+        data.XP    = data.XP - GameConfig.XPForLevel(data.Level)
+        data.Level = data.Level + 1
+        levelled   = true
+    end
+
+    if levelled then
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Level Up! You are now Level " .. data.Level .. "!",
+            "LevelUp"
+        )
+        Remotes.PlaySound:FireClient(player, "LevelUp")
+    end
+
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end
+
+function DataManager.AddInventory(player, itemName, count)
+    local data = PlayerData[player]
+    if not data then return end
+    data.Inventory[itemName] = (data.Inventory[itemName] or 0) + count
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end
+
+function DataManager.RemoveInventory(player, itemName, count)
+    local data = PlayerData[player]
+    if not data then return false end
+    local current = data.Inventory[itemName] or 0
+    if current < count then return false end
+    data.Inventory[itemName] = current - count
+    Remotes.UpdatePlayerData:FireClient(player, data)
+    return true
+end
+
+function DataManager.SaveAll()
+    for player, _ in pairs(PlayerData) do
+        saveData(player)
+    end
+end
+
+-- ── Events ─────────────────────────────────────────────────────────────────
+
+Players.PlayerAdded:Connect(function(player)
+    loadData(player)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    saveData(player)
+    PlayerData[player] = nil
+end)
+
+-- Handle server shutdown
+game:BindToClose(function()
+    if RunService:IsStudio() then
+        task.wait(2)
+    else
+        for player, _ in pairs(PlayerData) do
+            saveData(player)
+        end
+        task.wait(3)
+    end
+end)
+
+-- Handle RequestData RemoteFunction
+Remotes.RequestData.OnServerInvoke = function(player)
+    return PlayerData[player] or defaultData()
+end
+
+-- Auto-save loop
+task.spawn(function()
+    while true do
+        task.wait(GameConfig.AutoSaveInterval)
+        DataManager.SaveAll()
+    end
+end)
+
+-- Make DataManager accessible to other server scripts via _G (simple approach)
+_G.DataManager = DataManager
+
+return DataManager
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="Script" referent="11">
+      <Properties>
+        <string name="Name">FarmManager</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- FarmManager Server Script
+-- Location: ServerScriptService > FarmManager
+-- Manages farm plots: planting, growing, watering, harvesting, wilting
+
+local Players   = game:GetService("Players")
+local RS        = game:GetService("ReplicatedStorage")
+
+local GameConfig = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local CropData   = require(RS:WaitForChild("GameModules"):WaitForChild("CropData"))
+local Remotes    = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
+
+-- Wait for DataManager to be ready
+local DataManager
+task.spawn(function()
+    repeat task.wait(0.1) until _G.DataManager
+    DataManager = _G.DataManager
+end)
+repeat task.wait(0.1) until DataManager
+
+-- ── Helpers ────────────────────────────────────────────────────────────────
+
+local function getGrowthProgress(plotData)
+    if not plotData.CropType or not plotData.PlantedAt then return 0 end
+    local crop     = CropData.GetCrop(plotData.CropType)
+    if not crop then return 0 end
+    local elapsed  = os.time() - plotData.PlantedAt
+    local duration = crop.GrowthTime
+    if plotData.WateredAt then
+        duration = duration * (1 - GameConfig.WaterGrowthBoost)
+    end
+    return math.min(elapsed / duration, 1)
+end
+
+local function isReady(plotData)
+    return getGrowthProgress(plotData) >= 1
+end
+
+local function isWilted(plotData)
+    if not plotData.CropType or not plotData.PlantedAt then return false end
+    local crop     = CropData.GetCrop(plotData.CropType)
+    if not crop then return false end
+    local duration = crop.GrowthTime
+    if plotData.WateredAt then
+        duration = duration * (1 - GameConfig.WaterGrowthBoost)
+    end
+    local wiltTime  = duration * (1 + GameConfig.WiltTimeMultiplier)
+    local elapsed   = os.time() - plotData.PlantedAt
+    return elapsed >= wiltTime
+end
+
+-- ── Actions ────────────────────────────────────────────────────────────────
+
+local function plantCrop(player, plotId, cropName)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local plot = data.Plots[tostring(plotId)]
+    if not plot then
+        Remotes.ShowNotification:FireClient(player, "Invalid plot.", "Error")
+        return
+    end
+    if not plot.Unlocked then
+        Remotes.ShowNotification:FireClient(player, "Unlock this plot first!", "Error")
+        return
+    end
+    if plot.CropType then
+        Remotes.ShowNotification:FireClient(player, "This plot already has a crop.", "Error")
+        return
+    end
+
+    local crop = CropData.GetCrop(cropName)
+    if not crop then
+        Remotes.ShowNotification:FireClient(player, "Unknown crop.", "Error")
+        return
+    end
+    if data.Level < crop.UnlockLevel then
+        Remotes.ShowNotification:FireClient(
+            player,
+            crop.DisplayName .. " requires Level " .. crop.UnlockLevel .. ".",
+            "Error"
+        )
+        return
+    end
+
+    -- Check inventory
+    local invCount = data.Inventory[cropName] or 0
+    if invCount < 1 then
+        Remotes.ShowNotification:FireClient(player, "No " .. crop.DisplayName .. " seeds! Buy some first.", "Error")
+        return
+    end
+
+    -- Deduct seed
+    DataManager.RemoveInventory(player, cropName, 1)
+
+    -- Plant
+    plot.CropType  = cropName
+    plot.PlantedAt = os.time()
+    plot.WateredAt = nil
+    plot.IsWilted  = false
+
+    Remotes.UpdatePlots:FireClient(player, data.Plots)
+    Remotes.PlaySound:FireClient(player, "Plant")
+    Remotes.ShowNotification:FireClient(
+        player,
+        crop.DisplayName .. " planted! Check back in " .. math.ceil(crop.GrowthTime/60) .. " min.",
+        "Success"
+    )
+end
+
+local function harvestCrop(player, plotId)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local plot = data.Plots[tostring(plotId)]
+    if not plot or not plot.CropType then
+        Remotes.ShowNotification:FireClient(player, "Nothing to harvest here.", "Error")
+        return
+    end
+
+    if isWilted(plot) then
+        -- Wilted – clear the plot, no reward
+        plot.CropType  = nil
+        plot.PlantedAt = nil
+        plot.WateredAt = nil
+        plot.IsWilted  = false
+        Remotes.UpdatePlots:FireClient(player, data.Plots)
+        Remotes.ShowNotification:FireClient(player, "The crop wilted! Plant a new one.", "Error")
+        return
+    end
+
+    if not isReady(plot) then
+        local progress = math.floor(getGrowthProgress(plot) * 100)
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Crop is " .. progress .. "% grown. Come back soon!",
+            "Info"
+        )
+        return
+    end
+
+    local crop = CropData.GetCrop(plot.CropType)
+    if not crop then return end
+
+    -- Reward
+    DataManager.AddCoins(player, crop.HarvestReward)
+    DataManager.AddXP(player, crop.XPReward)
+    data.TotalHarvests = data.TotalHarvests + 1
+
+    -- Clear plot
+    plot.CropType  = nil
+    plot.PlantedAt = nil
+    plot.WateredAt = nil
+    plot.IsWilted  = false
+
+    Remotes.UpdatePlots:FireClient(player, data.Plots)
+    Remotes.PlaySound:FireClient(player, "Harvest")
+    Remotes.ShowNotification:FireClient(
+        player,
+        "Harvested " .. crop.DisplayName .. "! +" .. crop.HarvestReward .. " coins, +" .. crop.XPReward .. " XP",
+        "Success"
+    )
+end
+
+local function waterCrop(player, plotId)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local plot = data.Plots[tostring(plotId)]
+    if not plot or not plot.CropType then
+        Remotes.ShowNotification:FireClient(player, "Nothing to water here.", "Error")
+        return
+    end
+    if plot.WateredAt then
+        Remotes.ShowNotification:FireClient(player, "Already watered!", "Info")
+        return
+    end
+    if isReady(plot) then
+        Remotes.ShowNotification:FireClient(player, "Crop is ready to harvest!", "Info")
+        return
+    end
+
+    plot.WateredAt = os.time()
+    Remotes.UpdatePlots:FireClient(player, data.Plots)
+    Remotes.PlaySound:FireClient(player, "Water")
+    Remotes.ShowNotification:FireClient(player, "Crop watered! Grows 50% faster.", "Success")
+end
+
+local function unlockPlot(player, plotId)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local id   = tonumber(plotId)
+    local plot = data.Plots[tostring(id)]
+    if not plot then return end
+    if plot.Unlocked then
+        Remotes.ShowNotification:FireClient(player, "Plot already unlocked.", "Info")
+        return
+    end
+
+    local cost = GameConfig.PlotUnlockCosts[id]
+    if not cost then
+        Remotes.ShowNotification:FireClient(player, "This plot cannot be unlocked.", "Error")
+        return
+    end
+    if data.Coins < cost then
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Need " .. cost .. " coins (you have " .. data.Coins .. ").",
+            "Error"
+        )
+        return
+    end
+
+    DataManager.AddCoins(player, -cost)
+    plot.Unlocked = true
+
+    Remotes.UpdatePlots:FireClient(player, data.Plots)
+    Remotes.PlaySound:FireClient(player, "Coins")
+    Remotes.ShowNotification:FireClient(player, "New plot unlocked!", "Success")
+end
+
+-- ── Wilt checker loop ──────────────────────────────────────────────────────
+
+task.spawn(function()
+    while true do
+        task.wait(10)  -- check every 10 seconds
+        for _, player in ipairs(Players:GetPlayers()) do
+            local data = DataManager.Get(player)
+            if data then
+                local changed = false
+                for _, plot in pairs(data.Plots) do
+                    if plot.CropType and not plot.IsWilted and isWilted(plot) then
+                        plot.IsWilted = true
+                        changed = true
+                    end
+                end
+                if changed then
+                    Remotes.UpdatePlots:FireClient(player, data.Plots)
+                    Remotes.ShowNotification:FireClient(
+                        player,
+                        "Some crops have wilted! Harvest them to clear the plots.",
+                        "Error"
+                    )
+                end
+            end
+        end
+    end
+end)
+
+-- ── Remote connections ─────────────────────────────────────────────────────
+
+Remotes.PlantCrop:Connect(function(player, plotId, cropName)
+    plantCrop(player, plotId, cropName)
+end)
+
+Remotes.HarvestCrop:Connect(function(player, plotId)
+    harvestCrop(player, plotId)
+end)
+
+Remotes.WaterCrop:Connect(function(player, plotId)
+    waterCrop(player, plotId)
+end)
+
+Remotes.UnlockPlot:Connect(function(player, plotId)
+    unlockPlot(player, plotId)
+end)
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="Script" referent="12">
+      <Properties>
+        <string name="Name">GameManager</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- GameManager Server Script
+-- Location: ServerScriptService > GameManager
+-- Orchestrates world setup and farm plot part creation
+
+local Players        = game:GetService("Players")
+local Workspace      = game:GetService("Workspace")
+local RS             = game:GetService("ReplicatedStorage")
+
+local GameConfig     = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local Remotes        = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
+
+-- ── World Setup ────────────────────────────────────────────────────────────
+
+local function buildWorld()
+    -- Terrain / Baseplate
+    local baseplate      = Workspace:FindFirstChild("Baseplate")
+    if baseplate then
+        baseplate.Material = Enum.Material.Grass
+        baseplate.BrickColor = BrickColor.new("Bright green")
+    end
+
+    -- Sky / Atmosphere
+    local lighting = game:GetService("Lighting")
+    lighting.Ambient     = Color3.fromRGB(120, 120, 120)
+    lighting.Brightness  = 2
+    lighting.ClockTime   = 10
+    lighting.FogEnd      = 1000
+
+    local sky = Instance.new("Sky")
+    sky.Parent = lighting
+end
+
+-- ── Farm Plot Parts ────────────────────────────────────────────────────────
+-- Creates physical Part objects in the world that players can click.
+-- Each Part is named "Plot_<id>" and stored in a Folder per player.
+
+local farmFolders = {}  -- [player] = Folder
+
+local COLS      = GameConfig.FarmGridCols
+local ROWS      = GameConfig.FarmGridRows
+local PLOT_SIZE = GameConfig.PlotSize
+local PLOT_GAP  = GameConfig.PlotGap
+local STRIDE    = PLOT_SIZE + PLOT_GAP
+
+local FARM_ORIGIN = Vector3.new(0, 0.6, 0)  -- centre of the farm grid
+
+local function plotIndexToPosition(index)
+    local col = ((index - 1) % COLS)
+    local row = math.floor((index - 1) / COLS)
+    local offsetX = (col - (COLS - 1) / 2) * STRIDE
+    local offsetZ = (row - (ROWS - 1) / 2) * STRIDE
+    return FARM_ORIGIN + Vector3.new(offsetX, 0, offsetZ)
+end
+
+local function createFarmPlots(player)
+    local folder = Instance.new("Folder")
+    folder.Name  = player.Name .. "_Farm"
+    folder.Parent = Workspace
+
+    local total = COLS * ROWS
+
+    for i = 1, total do
+        local part = Instance.new("Part")
+        part.Name        = "Plot_" .. i
+        part.Size        = Vector3.new(PLOT_SIZE, 0.4, PLOT_SIZE)
+        part.Position    = plotIndexToPosition(i)
+        part.Anchored    = true
+        part.Material    = Enum.Material.Ground
+        part.BrickColor  = BrickColor.new("Reddish brown")
+
+        -- Locked indicator initially (overridden when data loads)
+        if i > GameConfig.StartingUnlockedPlots then
+            part.BrickColor = BrickColor.new("Dark grey")
+            local billboardGui = Instance.new("BillboardGui")
+            billboardGui.Name        = "LockGui"
+            billboardGui.Size        = UDim2.new(0, 80, 0, 40)
+            billboardGui.StudsOffset = Vector3.new(0, 2, 0)
+            billboardGui.Parent      = part
+
+            local label = Instance.new("TextLabel")
+            label.Size            = UDim2.new(1, 0, 1, 0)
+            label.BackgroundTransparency = 1
+            label.Text            = "Locked"
+            label.TextColor3      = Color3.fromRGB(255,255,255)
+            label.Font            = Enum.Font.GothamBold
+            label.TextScaled      = true
+            label.Parent          = billboardGui
+        end
+
+        -- ClickDetector for interaction
+        local clickDetector = Instance.new("ClickDetector")
+        clickDetector.MaxActivationDistance = 20
+        clickDetector.Name   = "ClickDetector"
+        clickDetector.Parent = part
+
+        -- Crop indicator (SurfaceGui)
+        local surfGui = Instance.new("SurfaceGui")
+        surfGui.Name         = "CropGui"
+        surfGui.Face         = Enum.NormalId.Top
+        surfGui.CanvasSize   = Vector2.new(200, 200)
+        surfGui.Parent       = part
+
+        local cropLabel = Instance.new("TextLabel")
+        cropLabel.Name               = "CropLabel"
+        cropLabel.Size               = UDim2.new(1, 0, 1, 0)
+        cropLabel.BackgroundTransparency = 1
+        cropLabel.Text               = ""
+        cropLabel.TextColor3         = Color3.fromRGB(255,255,255)
+        cropLabel.Font               = Enum.Font.GothamBold
+        cropLabel.TextScaled         = true
+        cropLabel.Parent             = surfGui
+
+        -- Wire up click → fire remote to client (client decides what action to take)
+        local plotId = i
+        clickDetector.MouseClick:Connect(function(clickingPlayer)
+            -- Fire a remote to tell the client which plot was clicked
+            Remotes.UpdatePlots:FireClient(clickingPlayer, {ClickedPlot = plotId})
+        end)
+
+        part.Parent = folder
+    end
+
+    farmFolders[player] = folder
+    return folder
+end
+
+local function removeFarmPlots(player)
+    if farmFolders[player] then
+        farmFolders[player]:Destroy()
+        farmFolders[player] = nil
+    end
+end
+
+-- ── Visual Update (driven by data sent from server to client → client handles visuals)
+-- The server also updates parts for other players viewing the farm (spectating etc.)
+-- For simplicity we keep the visual updates on the client side.
+
+-- ── Players ────────────────────────────────────────────────────────────────
+
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        -- Teleport player to their farm area (offset by UserId for multiple farms)
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        humanoidRootPart.CFrame = CFrame.new(FARM_ORIGIN + Vector3.new(0, 5, -20))
+    end)
+
+    -- Create farm plots after a short delay (data loads async)
+    task.delay(1, function()
+        createFarmPlots(player)
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    removeFarmPlots(player)
+end)
+
+-- ── Boot ───────────────────────────────────────────────────────────────────
+
+buildWorld()
+
+-- Ambient background music (plays for all clients via a Sound in Workspace)
+local bgMusic = Instance.new("Sound")
+bgMusic.Name       = "BackgroundMusic"
+bgMusic.SoundId    = GameConfig.Sounds.Background
+bgMusic.Volume     = 0.3
+bgMusic.Looped     = true
+bgMusic.RollOffMaxDistance = 1e6
+bgMusic.Parent     = Workspace
+bgMusic:Play()
+
+print("[Adam And Eshaals Farm] Server started — v" .. GameConfig.Version)
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="Script" referent="13">
+      <Properties>
+        <string name="Name">Main</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- Main.server.lua  (Script in ServerScriptService)
 -- Single server script — no _G, no cross-script dependencies
 
 local Players          = game:GetService("Players")
@@ -873,25 +1939,477 @@ task.spawn(function()
 end)
 
 print("✅ Adam And Eshaals Farm — server ready!")
-]]></ProtectedString>
-				</Properties>
-			</Item>
-		</Item>
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="Script" referent="14">
+      <Properties>
+        <string name="Name">ShopManager</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- ShopManager Server Script
+-- Location: ServerScriptService > ShopManager
+-- Handles purchasing seeds and animals
 
-		<Item class="StarterPlayer" referent="SP">
-			<Properties>
-				<string name="Name">StarterPlayer</string>
-			</Properties>
-			<Item class="StarterPlayerScripts" referent="SPS">
-				<Properties>
-					<string name="Name">StarterPlayerScripts</string>
-				</Properties>
-				<Item class="LocalScript" referent="CLI">
-					<Properties>
-						<string name="Name">Client</string>
-						<bool name="Disabled">false</bool>
-						<ProtectedString name="Source"><![CDATA[-- Client.client.lua  (LocalScript in StarterPlayerScripts)
--- Single client script — handles all UI and input
+local RS = game:GetService("ReplicatedStorage")
+
+local GameConfig  = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local CropData    = require(RS:WaitForChild("GameModules"):WaitForChild("CropData"))
+local AnimalData  = require(RS:WaitForChild("GameModules"):WaitForChild("AnimalData"))
+local Remotes     = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
+
+local DataManager
+task.spawn(function()
+    repeat task.wait(0.1) until _G.DataManager
+    DataManager = _G.DataManager
+end)
+repeat task.wait(0.1) until DataManager
+
+-- ── Buy Seeds ──────────────────────────────────────────────────────────────
+
+Remotes.BuySeed:Connect(function(player, cropName, amount)
+    amount = math.max(1, math.min(amount or 1, 100))  -- clamp 1–100
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local crop = CropData.GetCrop(cropName)
+    if not crop then
+        Remotes.ShowNotification:FireClient(player, "Unknown crop.", "Error")
+        return
+    end
+    if data.Level < crop.UnlockLevel then
+        Remotes.ShowNotification:FireClient(
+            player,
+            crop.DisplayName .. " requires Level " .. crop.UnlockLevel .. ".",
+            "Error"
+        )
+        return
+    end
+
+    local totalCost = crop.SeedCost * amount
+    if data.Coins < totalCost then
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Not enough coins! Need " .. totalCost .. " (you have " .. data.Coins .. ").",
+            "Error"
+        )
+        return
+    end
+
+    DataManager.AddCoins(player, -totalCost)
+    DataManager.AddInventory(player, cropName, amount)
+
+    Remotes.PlaySound:FireClient(player, "Coins")
+    Remotes.ShowNotification:FireClient(
+        player,
+        "Bought " .. amount .. "x " .. crop.DisplayName .. " seeds for " .. totalCost .. " coins.",
+        "Success"
+    )
+end)
+
+-- ── Buy Animal ─────────────────────────────────────────────────────────────
+
+Remotes.BuyAnimal:Connect(function(player, animalName)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local animal = AnimalData.GetAnimal(animalName)
+    if not animal then
+        Remotes.ShowNotification:FireClient(player, "Unknown animal.", "Error")
+        return
+    end
+    if data.Level < animal.UnlockLevel then
+        Remotes.ShowNotification:FireClient(
+            player,
+            animal.DisplayName .. " requires Level " .. animal.UnlockLevel .. ".",
+            "Error"
+        )
+        return
+    end
+    if data.Coins < animal.Cost then
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Not enough coins! Need " .. animal.Cost .. " (you have " .. data.Coins .. ").",
+            "Error"
+        )
+        return
+    end
+
+    DataManager.AddCoins(player, -animal.Cost)
+
+    -- Add animal to player data with unique ID
+    local uuid = player.UserId .. "_" .. animalName .. "_" .. os.time()
+    data.Animals[uuid] = {
+        AnimalType  = animalName,
+        LastCollect = os.time(),
+        LastFed     = nil,
+    }
+
+    Remotes.ShowNotification:FireClient(
+        player,
+        animal.DisplayName .. " added to your farm!",
+        "Success"
+    )
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end)
+
+-- ── Collect Animal Product ─────────────────────────────────────────────────
+
+Remotes.CollectAnimal:Connect(function(player, animalId)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local animalState = data.Animals[animalId]
+    if not animalState then
+        Remotes.ShowNotification:FireClient(player, "Animal not found.", "Error")
+        return
+    end
+
+    local animal    = AnimalData.GetAnimal(animalState.AnimalType)
+    local elapsed   = os.time() - (animalState.LastCollect or 0)
+    local prodTime  = animal.ProduceTime
+    if animalState.LastFed then
+        prodTime = prodTime * 0.75  -- 25% faster when fed
+    end
+
+    if elapsed < prodTime then
+        local remaining = math.ceil(prodTime - elapsed)
+        Remotes.ShowNotification:FireClient(
+            player,
+            animal.DisplayName .. " not ready yet. " .. remaining .. "s remaining.",
+            "Info"
+        )
+        return
+    end
+
+    -- Reward
+    DataManager.AddCoins(player, animal.ProductReward)
+    DataManager.AddXP(player, animal.XPReward)
+    animalState.LastCollect = os.time()
+    animalState.LastFed     = nil  -- reset fed bonus
+
+    Remotes.ShowNotification:FireClient(
+        player,
+        "Collected " .. animal.ProductName .. " from " .. animal.DisplayName
+            .. "! +" .. animal.ProductReward .. " coins",
+        "Success"
+    )
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end)
+
+-- ── Feed Animal ─────────────────────────────────────────────────────────────
+
+Remotes.FeedAnimal:Connect(function(player, animalId)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local animalState = data.Animals[animalId]
+    if not animalState then return end
+
+    local animal = AnimalData.GetAnimal(animalState.AnimalType)
+    if data.Coins < animal.FeedCost then
+        Remotes.ShowNotification:FireClient(
+            player,
+            "Need " .. animal.FeedCost .. " coins to feed.",
+            "Error"
+        )
+        return
+    end
+
+    DataManager.AddCoins(player, -animal.FeedCost)
+    animalState.LastFed = os.time()
+
+    Remotes.ShowNotification:FireClient(
+        player,
+        animal.DisplayName .. " fed! Produces 25% faster.",
+        "Success"
+    )
+    Remotes.UpdatePlayerData:FireClient(player, data)
+end)
+
+-- ── Sell Inventory Items ───────────────────────────────────────────────────
+
+Remotes.SellInventory:Connect(function(player, itemName, amount)
+    local data = DataManager.Get(player)
+    if not data then return end
+
+    local crop = CropData.GetCrop(itemName)
+    if not crop then
+        Remotes.ShowNotification:FireClient(player, "Cannot sell that.", "Error")
+        return
+    end
+
+    local count = math.min(amount or 1, data.Inventory[itemName] or 0)
+    if count <= 0 then
+        Remotes.ShowNotification:FireClient(player, "None to sell!", "Error")
+        return
+    end
+
+    local sellPrice = math.floor(crop.SeedCost * 0.5) -- 50% of seed cost
+    DataManager.RemoveInventory(player, itemName, count)
+    DataManager.AddCoins(player, sellPrice * count)
+
+    Remotes.ShowNotification:FireClient(
+        player,
+        "Sold " .. count .. "x " .. crop.DisplayName .. " seeds for " .. (sellPrice*count) .. " coins.",
+        "Success"
+    )
+end)
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+  <Item class="StarterGui" referent="15">
+    <Properties>
+      <string name="Name">StarterGui</string>
+      <bool name="ResetPlayerGuiOnSpawn">false</bool>
+    </Properties>
+  </Item>
+  <Item class="StarterPlayer" referent="16">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="17">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="LocalScript" referent="18">
+        <Properties>
+          <string name="Name">ClientController</string>
+          <string name="Source"><![CDATA[-- ClientController LocalScript
+-- Location: StarterPlayer > StarterPlayerScripts > ClientController
+-- Handles client-side farm interaction, sound playback, and plot visuals
+
+local Players       = game:GetService("Players")
+local RS            = game:GetService("ReplicatedStorage")
+local TweenService  = game:GetService("TweenService")
+local SoundService  = game:GetService("SoundService")
+local UserInput     = game:GetService("UserInputService")
+
+local localPlayer   = Players.LocalPlayer
+local GameConfig    = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local CropData      = require(RS:WaitForChild("GameModules"):WaitForChild("CropData"))
+local Remotes       = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
+
+-- ── State ──────────────────────────────────────────────────────────────────
+
+local playerData  = nil   -- cached copy of server data
+local plotsData   = nil   -- cached copy of plots
+local selectedTool = "Harvest"  -- "Harvest" | "Water" | "Plant" | "Unlock"
+local selectedCrop = nil  -- crop name for planting
+
+-- ── Farm folder reference ──────────────────────────────────────────────────
+
+local farmFolder
+local function getFarmFolder()
+    if farmFolder and farmFolder.Parent then return farmFolder end
+    farmFolder = workspace:FindFirstChild(localPlayer.Name .. "_Farm")
+    return farmFolder
+end
+
+-- ── Plot Visual Update ─────────────────────────────────────────────────────
+
+local STAGE_EMOJIS = { "Seedling", "Growing", "Almost", "Ready!" }
+
+local function getProgressStage(progress)
+    if progress < 0.25 then return 1
+    elseif progress < 0.5 then return 2
+    elseif progress < 1   then return 3
+    else return 4 end
+end
+
+local function updatePlotVisual(plotPart, plotState)
+    if not plotPart then return end
+
+    local cropLabel = plotPart:FindFirstChild("CropGui")
+                      and plotPart.CropGui:FindFirstChild("CropLabel")
+    local lockGui   = plotPart:FindFirstChild("LockGui")
+
+    if not plotState.Unlocked then
+        plotPart.BrickColor = BrickColor.new("Dark grey")
+        if lockGui then lockGui.Enabled = true end
+        if cropLabel then cropLabel.Text = "" end
+        return
+    end
+
+    if lockGui then lockGui.Enabled = false end
+
+    if plotState.IsWilted then
+        plotPart.BrickColor = BrickColor.new("Olive")
+        if cropLabel then cropLabel.Text = "Wilted" end
+        return
+    end
+
+    if not plotState.CropType then
+        plotPart.BrickColor = BrickColor.new("Reddish brown")
+        if cropLabel then cropLabel.Text = "" end
+        return
+    end
+
+    -- Growing / ready
+    local crop     = CropData.GetCrop(plotState.CropType)
+    local elapsed  = os.time() - (plotState.PlantedAt or os.time())
+    local duration = crop and crop.GrowthTime or 60
+    if plotState.WateredAt then
+        duration = duration * (1 - GameConfig.WaterGrowthBoost)
+    end
+    local progress = math.min(elapsed / duration, 1)
+
+    if progress >= 1 then
+        plotPart.BrickColor = BrickColor.new("Bright green")
+        if cropLabel then
+            cropLabel.Text = (crop and crop.DisplayName or plotState.CropType) .. "\nReady!"
+        end
+    else
+        local stage = getProgressStage(progress)
+        local stageText = STAGE_EMOJIS[stage]
+        plotPart.BrickColor = BrickColor.new("Reddish brown")
+        if cropLabel then
+            cropLabel.Text = stageText .. " " .. (crop and crop.DisplayName or plotState.CropType)
+                             .. "\n" .. math.floor(progress * 100) .. "%"
+        end
+    end
+
+    if plotState.WateredAt then
+        plotPart.Material = Enum.Material.SmoothPlastic
+    else
+        plotPart.Material = Enum.Material.Ground
+    end
+end
+
+local function refreshAllPlotVisuals()
+    if not plotsData then return end
+    local folder = getFarmFolder()
+    if not folder then return end
+
+    for plotId, state in pairs(plotsData) do
+        local part = folder:FindFirstChild("Plot_" .. plotId)
+        if part then
+            updatePlotVisual(part, state)
+        end
+    end
+end
+
+-- ── Continuous Growth Animation ────────────────────────────────────────────
+
+task.spawn(function()
+    while true do
+        task.wait(5)
+        refreshAllPlotVisuals()
+    end
+end)
+
+-- ── Sound Playback ─────────────────────────────────────────────────────────
+
+local soundCache = {}
+local function playSound(key)
+    local id = GameConfig.Sounds[key]
+    if not id then return end
+    local sound = soundCache[key]
+    if not sound then
+        sound = Instance.new("Sound")
+        sound.SoundId = id
+        sound.Parent  = SoundService
+        soundCache[key] = sound
+    end
+    sound:Play()
+end
+
+-- ── Plot Click Handling ────────────────────────────────────────────────────
+
+local function onPlotClicked(plotId)
+    if not plotsData then return end
+    local state = plotsData[tostring(plotId)]
+    if not state then return end
+
+    if not state.Unlocked then
+        -- Try to unlock
+        Remotes.UnlockPlot:FireServer(plotId)
+        return
+    end
+
+    if state.IsWilted then
+        -- Harvest to clear
+        Remotes.HarvestCrop:FireServer(plotId)
+        return
+    end
+
+    if state.CropType then
+        -- Crop on plot: water or harvest
+        if selectedTool == "Water" then
+            Remotes.WaterCrop:FireServer(plotId)
+        else
+            Remotes.HarvestCrop:FireServer(plotId)
+        end
+    else
+        -- Empty plot: plant
+        if selectedCrop then
+            Remotes.PlantCrop:FireServer(plotId, selectedCrop)
+        else
+            -- Open the seed shop (signal to UI)
+            local FarmUI = localPlayer.PlayerGui:FindFirstChild("FarmUI")
+            if FarmUI then
+                local shopFrame = FarmUI:FindFirstChild("ShopFrame", true)
+                if shopFrame then shopFrame.Visible = true end
+            end
+        end
+    end
+end
+
+-- ── Remote Listeners ──────────────────────────────────────────────────────
+
+Remotes.UpdatePlayerData.OnClientEvent:Connect(function(data)
+    playerData = data
+    -- Propagate to UI script via BindableEvent-like approach using shared table
+    _G.PlayerData = data
+end)
+
+Remotes.UpdatePlots.OnClientEvent:Connect(function(data)
+    -- Check for plot-click signal
+    if data.ClickedPlot then
+        onPlotClicked(data.ClickedPlot)
+        return
+    end
+    plotsData = data
+    _G.PlotsData = data
+    refreshAllPlotVisuals()
+end)
+
+Remotes.PlaySound.OnClientEvent:Connect(function(soundKey)
+    playSound(soundKey)
+end)
+
+-- ── Expose tool selection to FarmUI ───────────────────────────────────────
+
+_G.SetTool = function(tool)
+    selectedTool = tool
+end
+
+_G.SetSelectedCrop = function(cropName)
+    selectedCrop  = cropName
+    selectedTool  = "Plant"
+end
+
+-- ── Request initial data ───────────────────────────────────────────────────
+
+task.delay(2, function()
+    local data = Remotes.RequestData:InvokeServer()
+    if data then
+        playerData = data
+        _G.PlayerData = data
+        plotsData  = data.Plots
+        _G.PlotsData = data.Plots
+        refreshAllPlotVisuals()
+    end
+end)
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="LocalScript" referent="19">
+        <Properties>
+          <string name="Name">FarmUI</string>
+          <string name="Source"><![CDATA[-- FarmUI LocalScript
+-- Location: StarterPlayer > StarterPlayerScripts > FarmUI
+-- Builds and manages all GUI elements for Adam And Eshaals Farm
 
 local Players      = game:GetService("Players")
 local RS           = game:GetService("ReplicatedStorage")
@@ -900,378 +2418,481 @@ local TweenService = game:GetService("TweenService")
 local localPlayer  = Players.LocalPlayer
 local playerGui    = localPlayer:WaitForChild("PlayerGui")
 
-local GameData     = require(RS:WaitForChild("GameModules"):WaitForChild("GameData"))
+local GameConfig   = require(RS:WaitForChild("GameModules"):WaitForChild("GameConfig"))
+local CropData     = require(RS:WaitForChild("GameModules"):WaitForChild("CropData"))
+local AnimalData   = require(RS:WaitForChild("GameModules"):WaitForChild("AnimalData"))
+local Remotes      = require(RS:WaitForChild("GameModules"):WaitForChild("Remotes"))
 
--- Wait for remotes (created by server Main script)
-local remotesFolder = RS:WaitForChild("Remotes", 20)
-if not remotesFolder then warn("No Remotes folder!") return end
+-- ══════════════════════════════════════════════════════════════════════════
+--  HELPER FUNCTIONS
+-- ══════════════════════════════════════════════════════════════════════════
 
-local RE = {
-	PlantCrop        = remotesFolder:WaitForChild("PlantCrop"),
-	HarvestCrop      = remotesFolder:WaitForChild("HarvestCrop"),
-	WaterCrop        = remotesFolder:WaitForChild("WaterCrop"),
-	BuySeed          = remotesFolder:WaitForChild("BuySeed"),
-	UnlockPlot       = remotesFolder:WaitForChild("UnlockPlot"),
-	UpdatePlots      = remotesFolder:WaitForChild("UpdatePlots"),
-	UpdatePlayerData = remotesFolder:WaitForChild("UpdatePlayerData"),
-	Notify           = remotesFolder:WaitForChild("Notify"),
-	PlotClicked      = remotesFolder:WaitForChild("PlotClicked"),
-}
-
--- ── State ─────────────────────────────────────────────────────────────────
-local selectedTool = "Harvest"   -- "Harvest" | "Water" | "Plant"
-local selectedCrop = nil
-local playerData   = { Coins=500, Level=1, XP=0, Inventory={} }
-local plotsData    = {}
-
--- ── UI Helpers ────────────────────────────────────────────────────────────
-local function F(props, parent)
-	local f = Instance.new("Frame")
-	for k,v in pairs(props) do f[k]=v end
-	if parent then f.Parent=parent end
-	return f
-end
-local function L(props, parent)
-	local l = Instance.new("TextLabel")
-	for k,v in pairs(props) do l[k]=v end
-	if parent then l.Parent=parent end
-	return l
-end
-local function B(props, parent)
-	local b = Instance.new("TextButton")
-	for k,v in pairs(props) do b[k]=v end
-	if parent then b.Parent=parent end
-	return b
-end
-local function corner(p, r)
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, r or 8)
-	c.Parent = p
-end
-local function listLayout(parent, dir, align, padding)
-	local l = Instance.new("UIListLayout")
-	l.FillDirection        = dir or Enum.FillDirection.Vertical
-	l.HorizontalAlignment  = align or Enum.HorizontalAlignment.Center
-	l.VerticalAlignment    = Enum.VerticalAlignment.Center
-	l.Padding              = UDim.new(0, padding or 6)
-	l.Parent               = parent
-	return l
+local function makeInstance(className, props, parent)
+    local obj = Instance.new(className)
+    for k, v in pairs(props) do obj[k] = v end
+    if parent then obj.Parent = parent end
+    return obj
 end
 
--- ── Root ScreenGui ────────────────────────────────────────────────────────
-local screen = Instance.new("ScreenGui")
-screen.Name           = "FarmUI"
-screen.ResetOnSpawn   = false
-screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-screen.Parent         = playerGui
+local function addCorner(parent, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius or 8)
+    c.Parent = parent
+    return c
+end
 
--- ════════════════════════════════════════════════════════════
---  TOP BAR
--- ════════════════════════════════════════════════════════════
-local topBar = F({
-	Name="TopBar", Size=UDim2.new(1,0,0,56), Position=UDim2.new(0,0,0,0),
-	BackgroundColor3=Color3.fromRGB(20,70,20), BorderSizePixel=0,
-}, screen)
+local function addPadding(parent, px)
+    local p = Instance.new("UIPadding")
+    p.PaddingTop    = UDim.new(0, px)
+    p.PaddingBottom = UDim.new(0, px)
+    p.PaddingLeft   = UDim.new(0, px)
+    p.PaddingRight  = UDim.new(0, px)
+    p.Parent = parent
+    return p
+end
 
-L({
-	Size=UDim2.new(0,300,1,0), Position=UDim2.new(0.5,-150,0,0),
-	BackgroundTransparency=1, Text="🌻 Adam And Eshaals Farm 🌻",
-	TextColor3=Color3.fromRGB(255,230,50), Font=Enum.Font.GothamBold, TextScaled=true,
+-- ══════════════════════════════════════════════════════════════════════════
+--  ROOT SCREENGUI
+-- ══════════════════════════════════════════════════════════════════════════
+
+local screenGui = makeInstance("ScreenGui", {
+    Name             = "FarmUI",
+    ResetOnSpawn     = false,
+    ZIndexBehavior   = Enum.ZIndexBehavior.Sibling,
+}, playerGui)
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  TOP BAR  (Coins | XP | Level)
+-- ══════════════════════════════════════════════════════════════════════════
+
+local topBar = makeInstance("Frame", {
+    Name             = "TopBar",
+    Size             = UDim2.new(1, 0, 0, 52),
+    Position         = UDim2.new(0, 0, 0, 0),
+    BackgroundColor3 = Color3.fromRGB(30, 80, 30),
+    BackgroundTransparency = 0.1,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(topBar, 0)
+
+-- Title label
+makeInstance("TextLabel", {
+    Name             = "TitleLabel",
+    Size             = UDim2.new(0, 260, 1, 0),
+    Position         = UDim2.new(0.5, -130, 0, 0),
+    BackgroundTransparency = 1,
+    Text             = "Adam And Eshaals Farm",
+    TextColor3       = Color3.fromRGB(255, 230, 50),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
 }, topBar)
 
-local coinsLbl = L({
-	Name="Coins", Size=UDim2.new(0,180,0,40), Position=UDim2.new(0,8,0,8),
-	BackgroundColor3=Color3.fromRGB(40,30,0), BackgroundTransparency=0.2,
-	Text="💰 500 coins", TextColor3=Color3.fromRGB(255,215,0),
-	Font=Enum.Font.GothamBold, TextScaled=true,
+-- Coins label
+local coinsLabel = makeInstance("TextLabel", {
+    Name             = "CoinsLabel",
+    Size             = UDim2.new(0, 160, 1, -8),
+    Position         = UDim2.new(0, 10, 0, 4),
+    BackgroundColor3 = Color3.fromRGB(50, 40, 0),
+    BackgroundTransparency = 0.3,
+    Text             = "Coins: 0",
+    TextColor3       = Color3.fromRGB(255, 220, 0),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
 }, topBar)
-corner(coinsLbl)
+addCorner(coinsLabel)
 
-local levelLbl = L({
-	Name="Level", Size=UDim2.new(0,210,0,40), Position=UDim2.new(1,-218,0,8),
-	BackgroundColor3=Color3.fromRGB(0,25,60), BackgroundTransparency=0.2,
-	Text="⭐ Lv 1  |  0 / 100 XP", TextColor3=Color3.fromRGB(100,200,255),
-	Font=Enum.Font.GothamBold, TextScaled=true,
+-- XP / Level label
+local xpLabel = makeInstance("TextLabel", {
+    Name             = "XPLabel",
+    Size             = UDim2.new(0, 200, 1, -8),
+    Position         = UDim2.new(1, -210, 0, 4),
+    BackgroundColor3 = Color3.fromRGB(0, 30, 60),
+    BackgroundTransparency = 0.3,
+    Text             = "Level 1  |  0 XP",
+    TextColor3       = Color3.fromRGB(100, 200, 255),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
 }, topBar)
-corner(levelLbl)
+addCorner(xpLabel)
 
--- ════════════════════════════════════════════════════════════
---  TOAST
--- ════════════════════════════════════════════════════════════
-local toast = L({
-	Name="Toast", Size=UDim2.new(0,460,0,54),
-	Position=UDim2.new(0.5,-230,0,62),
-	BackgroundColor3=Color3.fromRGB(20,80,20), BackgroundTransparency=0.1,
-	Text="", TextColor3=Color3.new(1,1,1), Font=Enum.Font.GothamBold,
-	TextScaled=true, Visible=false, BorderSizePixel=0, ZIndex=50,
-}, screen)
-corner(toast, 10)
+-- ══════════════════════════════════════════════════════════════════════════
+--  TOOL BAR  (bottom)
+-- ══════════════════════════════════════════════════════════════════════════
 
-local toastThread
-local function showToast(msg, ntype)
-	local col = {
-		Success=Color3.fromRGB(10,110,10), Error=Color3.fromRGB(130,10,10),
-		LevelUp=Color3.fromRGB(130,80,0),  Info=Color3.fromRGB(15,50,130),
-	}
-	toast.BackgroundColor3 = col[ntype] or col.Info
-	toast.Text    = msg
-	toast.Visible = true
-	if toastThread then task.cancel(toastThread) end
-	toastThread = task.delay(4, function() toast.Visible = false end)
+local toolBar = makeInstance("Frame", {
+    Name             = "ToolBar",
+    Size             = UDim2.new(0, 340, 0, 60),
+    Position         = UDim2.new(0.5, -170, 1, -72),
+    BackgroundColor3 = Color3.fromRGB(30, 60, 30),
+    BackgroundTransparency = 0.1,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(toolBar, 12)
+
+local toolLayout = makeInstance("UIListLayout", {
+    FillDirection    = Enum.FillDirection.Horizontal,
+    HorizontalAlignment = Enum.HorizontalAlignment.Center,
+    VerticalAlignment   = Enum.VerticalAlignment.Center,
+    Padding          = UDim.new(0, 8),
+}, toolBar)
+
+local function makeToolBtn(label, toolName, color)
+    local btn = makeInstance("TextButton", {
+        Name             = label,
+        Size             = UDim2.new(0, 90, 0, 44),
+        BackgroundColor3 = color,
+        Text             = label,
+        TextColor3       = Color3.fromRGB(255,255,255),
+        Font             = Enum.Font.GothamBold,
+        TextScaled       = true,
+        BorderSizePixel  = 0,
+    }, toolBar)
+    addCorner(btn, 8)
+    btn.MouseButton1Click:Connect(function()
+        if _G.SetTool then _G.SetTool(toolName) end
+        -- Highlight active
+        for _, child in ipairs(toolBar:GetChildren()) do
+            if child:IsA("TextButton") then
+                child.BackgroundTransparency = (child == btn) and 0 or 0.35
+            end
+        end
+    end)
+    return btn
 end
 
--- ════════════════════════════════════════════════════════════
---  TOOLBAR  (bottom centre)
--- ════════════════════════════════════════════════════════════
-local toolbar = F({
-	Name="Toolbar", Size=UDim2.new(0,400,0,60),
-	Position=UDim2.new(0.5,-200,1,-70),
-	BackgroundColor3=Color3.fromRGB(15,55,15), BackgroundTransparency=0.1,
-	BorderSizePixel=0,
-}, screen)
-corner(toolbar, 12)
-listLayout(toolbar, Enum.FillDirection.Horizontal, Enum.HorizontalAlignment.Center, 8)
-do local p=Instance.new("UIPadding") p.PaddingLeft=UDim.new(0,8) p.PaddingRight=UDim.new(0,8) p.Parent=toolbar end
+makeToolBtn("Harvest",   "Harvest", Color3.fromRGB(200,120, 0))
+makeToolBtn("Water",     "Water",   Color3.fromRGB( 30,120,200))
+makeToolBtn("Shop",      "Shop",    Color3.fromRGB( 80,160, 80))
 
-local toolBtns = {}
-
-local function makeTool(txt, key, color)
-	local b = B({
-		Size=UDim2.new(0,108,0,46), BackgroundColor3=color,
-		Text=txt, TextColor3=Color3.new(1,1,1), Font=Enum.Font.GothamBold,
-		TextScaled=true, BorderSizePixel=0, BackgroundTransparency=0.4,
-	}, toolbar)
-	corner(b, 8)
-	toolBtns[key] = b
-	return b
+-- Shop button opens shop
+local shopBtn = toolBar:FindFirstChild("Shop")
+if shopBtn then
+    shopBtn.MouseButton1Click:Connect(function()
+        local shopFrame = screenGui:FindFirstChild("ShopFrame")
+        if shopFrame then
+            shopFrame.Visible = not shopFrame.Visible
+        end
+    end)
 end
 
-local harvestBtn = makeTool("🌾 Harvest",  "Harvest", Color3.fromRGB(180,100,0))
-local waterBtn   = makeTool("💧 Water",    "Water",   Color3.fromRGB(30,110,200))
-local shopOpenBtn= makeTool("🛒 Shop",     "Shop",    Color3.fromRGB(50,140,50))
-
-local function activateTool(key)
-	selectedTool = key
-	for k, b in pairs(toolBtns) do
-		b.BackgroundTransparency = (k == key) and 0 or 0.4
-	end
-	if key ~= "Shop" then
-		showToast("Tool: " .. key .. " — click a plot", "Info")
-	end
-end
-activateTool("Harvest")
-
-harvestBtn.MouseButton1Click:Connect(function() activateTool("Harvest") end)
-waterBtn.MouseButton1Click:Connect(function() activateTool("Water") end)
-
--- ════════════════════════════════════════════════════════════
+-- ══════════════════════════════════════════════════════════════════════════
 --  SHOP FRAME
--- ════════════════════════════════════════════════════════════
-local shopFrame = F({
-	Name="Shop", Size=UDim2.new(0,520,0,560),
-	Position=UDim2.new(0.5,-260,0.5,-280),
-	BackgroundColor3=Color3.fromRGB(12,50,12), BackgroundTransparency=0.03,
-	Visible=false, BorderSizePixel=0, ZIndex=20,
-}, screen)
-corner(shopFrame, 14)
+-- ══════════════════════════════════════════════════════════════════════════
 
-L({
-	Size=UDim2.new(1,-55,0,50), Position=UDim2.new(0,10,0,4),
-	BackgroundTransparency=1, Text="🛒  Seed Shop",
-	TextColor3=Color3.fromRGB(255,230,50), Font=Enum.Font.GothamBold,
-	TextScaled=true, ZIndex=21,
+local shopFrame = makeInstance("Frame", {
+    Name             = "ShopFrame",
+    Size             = UDim2.new(0, 480, 0, 520),
+    Position         = UDim2.new(0.5, -240, 0.5, -260),
+    BackgroundColor3 = Color3.fromRGB(20, 60, 20),
+    BackgroundTransparency = 0.05,
+    Visible          = false,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(shopFrame, 14)
+
+-- Shop title
+makeInstance("TextLabel", {
+    Size             = UDim2.new(1, -50, 0, 44),
+    Position         = UDim2.new(0, 10, 0, 4),
+    BackgroundTransparency = 1,
+    Text             = "Seed Shop",
+    TextColor3       = Color3.fromRGB(255,230, 50),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
 }, shopFrame)
 
-local closeBtn = B({
-	Size=UDim2.new(0,44,0,44), Position=UDim2.new(1,-50,0,4),
-	BackgroundColor3=Color3.fromRGB(180,30,30), Text="✕",
-	TextColor3=Color3.new(1,1,1), Font=Enum.Font.GothamBold,
-	TextScaled=true, BorderSizePixel=0, ZIndex=21,
+-- Close button
+local closeShopBtn = makeInstance("TextButton", {
+    Size             = UDim2.new(0, 40, 0, 40),
+    Position         = UDim2.new(1, -46, 0, 4),
+    BackgroundColor3 = Color3.fromRGB(180, 40, 40),
+    Text             = "X",
+    TextColor3       = Color3.fromRGB(255,255,255),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
+    BorderSizePixel  = 0,
 }, shopFrame)
-corner(closeBtn)
-closeBtn.MouseButton1Click:Connect(function() shopFrame.Visible=false end)
-
-local shopScroll = Instance.new("ScrollingFrame")
-shopScroll.Size               = UDim2.new(1,-12,1,-60)
-shopScroll.Position           = UDim2.new(0,6,0,56)
-shopScroll.BackgroundTransparency = 1
-shopScroll.ScrollBarThickness = 5
-shopScroll.CanvasSize         = UDim2.new(0,0,0,0)
-shopScroll.AutomaticCanvasSize= Enum.AutomaticSize.Y
-shopScroll.ZIndex             = 21
-shopScroll.Parent             = shopFrame
-
-listLayout(shopScroll, Enum.FillDirection.Vertical, Enum.HorizontalAlignment.Left, 6)
-do local p=Instance.new("UIPadding") p.PaddingTop=UDim.new(0,4) p.PaddingLeft=UDim.new(0,4) p.Parent=shopScroll end
-
-local function buildShop(level)
-	for _, c in ipairs(shopScroll:GetChildren()) do
-		if c:IsA("Frame") then c:Destroy() end
-	end
-	for _, crop in ipairs(GameData.GetUnlockedCrops(level or 1)) do
-		local row = F({
-			Size=UDim2.new(1,-8,0,76), BackgroundColor3=Color3.fromRGB(20,70,20),
-			BackgroundTransparency=0.25, BorderSizePixel=0, ZIndex=22,
-		}, shopScroll)
-		corner(row, 8)
-
-		L({
-			Size=UDim2.new(0.48,0,0.48,0), Position=UDim2.new(0,10,0.04,0),
-			BackgroundTransparency=1, Text=crop.Display,
-			TextColor3=Color3.fromRGB(255,255,180), Font=Enum.Font.GothamBold,
-			TextScaled=true, TextXAlignment=Enum.TextXAlignment.Left, ZIndex=23,
-		}, row)
-
-		L({
-			Size=UDim2.new(0.9,0,0.44,0), Position=UDim2.new(0,10,0.52,0),
-			BackgroundTransparency=1,
-			Text="💰"..crop.Cost.."  ⏱"..crop.Time.."s  +"..crop.Reward.." coins  +"..crop.XP.." XP",
-			TextColor3=Color3.fromRGB(190,190,190), Font=Enum.Font.Gotham,
-			TextScaled=true, TextXAlignment=Enum.TextXAlignment.Left, ZIndex=23,
-		}, row)
-
-		local function makeShopBtn(txt, xOffset, color, onClick)
-			local b = B({
-				Size=UDim2.new(0,84,0,36), Position=UDim2.new(1,xOffset,0.5,-18),
-				BackgroundColor3=color, Text=txt, TextColor3=Color3.new(1,1,1),
-				Font=Enum.Font.GothamBold, TextScaled=true, BorderSizePixel=0, ZIndex=24,
-			}, row)
-			corner(b, 6)
-			b.MouseButton1Click:Connect(onClick)
-		end
-
-		makeShopBtn("✏ Plant",  -278, Color3.fromRGB(160,100,0), function()
-			selectedCrop  = crop.Name
-			selectedTool  = "Plant"
-			for k,bb in pairs(toolBtns) do bb.BackgroundTransparency=0.4 end
-			shopFrame.Visible = false
-			showToast("Selected " .. crop.Display .. " — click an empty plot! 🌱", "Success")
-		end)
-
-		makeShopBtn("Buy ×1",  -186, Color3.fromRGB(35,140,35), function()
-			RE.BuySeed:FireServer(crop.Name, 1)
-		end)
-
-		makeShopBtn("Buy ×10", -94, Color3.fromRGB(25,100,180), function()
-			RE.BuySeed:FireServer(crop.Name, 10)
-		end)
-	end
-end
-
-shopOpenBtn.MouseButton1Click:Connect(function()
-	shopFrame.Visible = not shopFrame.Visible
-	if shopFrame.Visible then
-		buildShop(playerData.Level)
-	end
+addCorner(closeShopBtn, 8)
+closeShopBtn.MouseButton1Click:Connect(function()
+    shopFrame.Visible = false
 end)
 
--- ════════════════════════════════════════════════════════════
---  INVENTORY STRIP
--- ════════════════════════════════════════════════════════════
-local invLbl = L({
-	Name="Inv", Size=UDim2.new(0,240,0,38), Position=UDim2.new(0,8,0,64),
-	BackgroundColor3=Color3.fromRGB(15,50,15), BackgroundTransparency=0.2,
-	Text="🎒 No seeds yet", TextColor3=Color3.new(1,1,1),
-	Font=Enum.Font.Gotham, TextScaled=true, BorderSizePixel=0,
-}, screen)
-corner(invLbl)
+-- Shop scroll frame
+local shopScroll = makeInstance("ScrollingFrame", {
+    Name             = "ShopScroll",
+    Size             = UDim2.new(1, -16, 1, -58),
+    Position         = UDim2.new(0, 8, 0, 54),
+    BackgroundTransparency = 1,
+    ScrollBarThickness = 6,
+    CanvasSize       = UDim2.new(0, 0, 0, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+}, shopFrame)
 
-local function updateInv(inv)
-	local parts = {}
-	for name, count in pairs(inv or {}) do
-		if count and count > 0 then
-			parts[#parts+1] = name:sub(1,5) .. "×" .. count
-		end
-	end
-	invLbl.Text = #parts > 0 and ("🎒 " .. table.concat(parts,"  ")) or "🎒 No seeds"
+local shopList = makeInstance("UIListLayout", {
+    SortOrder        = Enum.SortOrder.LayoutOrder,
+    Padding          = UDim.new(0, 6),
+}, shopScroll)
+addPadding(shopScroll, 4)
+
+local function buildShopItems(level)
+    -- Clear existing items
+    for _, child in ipairs(shopScroll:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+
+    local crops = CropData.GetUnlockedCrops(level or 1)
+
+    for _, crop in ipairs(crops) do
+        local row = makeInstance("Frame", {
+            Size             = UDim2.new(1, -8, 0, 68),
+            BackgroundColor3 = Color3.fromRGB(30, 80, 30),
+            BackgroundTransparency = 0.3,
+            BorderSizePixel  = 0,
+        }, shopScroll)
+        addCorner(row, 8)
+
+        -- Crop name
+        makeInstance("TextLabel", {
+            Size             = UDim2.new(0, 160, 0.5, 0),
+            Position         = UDim2.new(0, 10, 0, 4),
+            BackgroundTransparency = 1,
+            Text             = crop.DisplayName,
+            TextColor3       = Color3.fromRGB(255,255,200),
+            Font             = Enum.Font.GothamBold,
+            TextScaled       = true,
+            TextXAlignment   = Enum.TextXAlignment.Left,
+        }, row)
+
+        -- Price info
+        makeInstance("TextLabel", {
+            Size             = UDim2.new(0, 200, 0.5, 0),
+            Position         = UDim2.new(0, 10, 0.5, 0),
+            BackgroundTransparency = 1,
+            Text             = "Cost: " .. crop.SeedCost .. " | XP: +" .. crop.XPReward .. " | Earn: +" .. crop.HarvestReward,
+            TextColor3       = Color3.fromRGB(200,200,200),
+            Font             = Enum.Font.Gotham,
+            TextScaled       = true,
+            TextXAlignment   = Enum.TextXAlignment.Left,
+        }, row)
+
+        -- Buy 1 button
+        local buyBtn = makeInstance("TextButton", {
+            Size             = UDim2.new(0, 80, 0, 36),
+            Position         = UDim2.new(1, -180, 0.5, -18),
+            BackgroundColor3 = Color3.fromRGB(50,160,50),
+            Text             = "Buy x1",
+            TextColor3       = Color3.fromRGB(255,255,255),
+            Font             = Enum.Font.GothamBold,
+            TextScaled       = true,
+            BorderSizePixel  = 0,
+        }, row)
+        addCorner(buyBtn, 6)
+        buyBtn.MouseButton1Click:Connect(function()
+            Remotes.BuySeed:FireServer(crop.Name, 1)
+        end)
+
+        -- Buy 10 button
+        local buy10Btn = makeInstance("TextButton", {
+            Size             = UDim2.new(0, 80, 0, 36),
+            Position         = UDim2.new(1, -90, 0.5, -18),
+            BackgroundColor3 = Color3.fromRGB(30,120,180),
+            Text             = "Buy x10",
+            TextColor3       = Color3.fromRGB(255,255,255),
+            Font             = Enum.Font.GothamBold,
+            TextScaled       = true,
+            BorderSizePixel  = 0,
+        }, row)
+        addCorner(buy10Btn, 6)
+        buy10Btn.MouseButton1Click:Connect(function()
+            Remotes.BuySeed:FireServer(crop.Name, 10)
+        end)
+
+        -- Select to plant button
+        local selectBtn = makeInstance("TextButton", {
+            Size             = UDim2.new(0, 70, 0, 36),
+            Position         = UDim2.new(1, -260, 0.5, -18),
+            BackgroundColor3 = Color3.fromRGB(180,120,0),
+            Text             = "Plant",
+            TextColor3       = Color3.fromRGB(255,255,255),
+            Font             = Enum.Font.GothamBold,
+            TextScaled       = true,
+            BorderSizePixel  = 0,
+        }, row)
+        addCorner(selectBtn, 6)
+        selectBtn.MouseButton1Click:Connect(function()
+            if _G.SetSelectedCrop then _G.SetSelectedCrop(crop.Name) end
+            shopFrame.Visible = false
+            -- Quick local toast
+            local toastLabel = screenGui:FindFirstChild("Toast")
+            if toastLabel then
+                toastLabel.Text    = "Selected: " .. crop.DisplayName .. " — click an empty plot!"
+                toastLabel.Visible = true
+                task.delay(3, function() toastLabel.Visible = false end)
+            end
+        end)
+    end
 end
 
--- ════════════════════════════════════════════════════════════
---  HELP LABEL
--- ════════════════════════════════════════════════════════════
-L({
-	Size=UDim2.new(0,340,0,36), Position=UDim2.new(0,8,1,-114),
-	BackgroundColor3=Color3.fromRGB(10,40,10), BackgroundTransparency=0.2,
-	Text="💡 Shop → select seed → click empty plot to plant",
-	TextColor3=Color3.fromRGB(200,200,200), Font=Enum.Font.Gotham,
-	TextScaled=true, BorderSizePixel=0,
-}, screen)
+-- ══════════════════════════════════════════════════════════════════════════
+--  INVENTORY PANEL  (right side)
+-- ══════════════════════════════════════════════════════════════════════════
 
--- ════════════════════════════════════════════════════════════
+local invPanel = makeInstance("Frame", {
+    Name             = "InventoryPanel",
+    Size             = UDim2.new(0, 180, 0, 300),
+    Position         = UDim2.new(1, -190, 0.5, -150),
+    BackgroundColor3 = Color3.fromRGB(20, 50, 20),
+    BackgroundTransparency = 0.1,
+    Visible          = false,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(invPanel, 10)
+
+makeInstance("TextLabel", {
+    Size             = UDim2.new(1, 0, 0, 36),
+    BackgroundTransparency = 1,
+    Text             = "Inventory",
+    TextColor3       = Color3.fromRGB(255,230,50),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
+}, invPanel)
+
+local invScroll = makeInstance("ScrollingFrame", {
+    Size             = UDim2.new(1, -8, 1, -44),
+    Position         = UDim2.new(0, 4, 0, 40),
+    BackgroundTransparency = 1,
+    ScrollBarThickness = 4,
+    CanvasSize       = UDim2.new(0, 0, 0, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+}, invPanel)
+
+makeInstance("UIListLayout", {
+    Padding  = UDim.new(0, 4),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+}, invScroll)
+
+-- Toggle inventory
+local invToggle = makeInstance("TextButton", {
+    Size             = UDim2.new(0, 44, 0, 44),
+    Position         = UDim2.new(1, -54, 0, 60),
+    BackgroundColor3 = Color3.fromRGB(20, 100, 20),
+    Text             = "Inv",
+    TextScaled       = true,
+    Font             = Enum.Font.GothamBold,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(invToggle, 10)
+invToggle.MouseButton1Click:Connect(function()
+    invPanel.Visible = not invPanel.Visible
+end)
+
+local function updateInventoryUI(inventory)
+    -- Clear
+    for _, child in ipairs(invScroll:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+    -- Populate
+    for itemName, count in pairs(inventory or {}) do
+        if count > 0 then
+            local row = makeInstance("Frame", {
+                Size             = UDim2.new(1, -4, 0, 32),
+                BackgroundTransparency = 0.6,
+                BackgroundColor3 = Color3.fromRGB(50,80,50),
+            }, invScroll)
+            addCorner(row, 4)
+            makeInstance("TextLabel", {
+                Size             = UDim2.new(1, -4, 1, 0),
+                Position         = UDim2.new(0, 4, 0, 0),
+                BackgroundTransparency = 1,
+                Text             = itemName .. ": x" .. count,
+                TextColor3       = Color3.fromRGB(220,220,220),
+                Font             = Enum.Font.Gotham,
+                TextScaled       = true,
+                TextXAlignment   = Enum.TextXAlignment.Left,
+            }, row)
+        end
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  TOAST NOTIFICATION
+-- ══════════════════════════════════════════════════════════════════════════
+
+local toast = makeInstance("TextLabel", {
+    Name             = "Toast",
+    Size             = UDim2.new(0, 420, 0, 50),
+    Position         = UDim2.new(0.5, -210, 0, 60),
+    BackgroundColor3 = Color3.fromRGB(20, 60, 20),
+    BackgroundTransparency = 0.1,
+    Text             = "",
+    TextColor3       = Color3.fromRGB(255,255,255),
+    Font             = Enum.Font.GothamBold,
+    TextScaled       = true,
+    Visible          = false,
+    BorderSizePixel  = 0,
+}, screenGui)
+addCorner(toast, 10)
+
+local function showToast(message, notifType)
+    local colors = {
+        Success  = Color3.fromRGB(20, 100, 20),
+        Error    = Color3.fromRGB(120, 20, 20),
+        LevelUp  = Color3.fromRGB(100, 60, 0),
+        Info     = Color3.fromRGB(20, 40, 100),
+    }
+    toast.BackgroundColor3 = colors[notifType] or colors.Info
+    toast.Text    = message
+    toast.Visible = true
+
+    -- Slide in
+    toast.Position = UDim2.new(0.5, -210, 0, 56)
+    TweenService:Create(toast, TweenInfo.new(0.25), {
+        Position = UDim2.new(0.5, -210, 0, 66)
+    }):Play()
+
+    task.delay(GameConfig.NotificationDuration, function()
+        TweenService:Create(toast, TweenInfo.new(0.25), {
+            Position = UDim2.new(0.5, -210, 0, 56),
+        }):Play()
+        task.wait(0.3)
+        toast.Visible = false
+    end)
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
 --  REMOTE LISTENERS
--- ════════════════════════════════════════════════════════════
+-- ══════════════════════════════════════════════════════════════════════════
 
-RE.Notify.OnClientEvent:Connect(function(msg, ntype)
-	showToast(msg, ntype)
+Remotes.ShowNotification.OnClientEvent:Connect(function(message, notifType)
+    showToast(message, notifType)
 end)
 
-RE.UpdatePlayerData.OnClientEvent:Connect(function(data)
-	playerData = data
-	coinsLbl.Text = "💰 " .. data.Coins .. " coins"
-	levelLbl.Text = "⭐ Lv " .. data.Level .. "  |  "
-		.. data.XP .. " / " .. GameData.XPForLevel(data.Level) .. " XP"
-	updateInv(data.Inventory)
-	if shopFrame.Visible then buildShop(data.Level) end
+Remotes.UpdatePlayerData.OnClientEvent:Connect(function(data)
+    -- Update top bar
+    coinsLabel.Text = "Coins: " .. data.Coins
+    xpLabel.Text    = "Lv " .. data.Level .. "  |  "
+                      .. data.XP .. "/" .. GameConfig.XPForLevel(data.Level) .. " XP"
+    -- Update shop for level
+    buildShopItems(data.Level)
+    -- Update inventory
+    updateInventoryUI(data.Inventory)
 end)
 
-RE.UpdatePlots.OnClientEvent:Connect(function(plots)
-	plotsData = plots
-end)
+-- ══════════════════════════════════════════════════════════════════════════
+--  BOOT
+-- ══════════════════════════════════════════════════════════════════════════
 
-RE.PlotClicked.OnClientEvent:Connect(function(plotIndex)
-	local plot = plotsData[plotIndex]
-	if not plot then return end
-
-	if not plot.Unlocked then
-		RE.UnlockPlot:FireServer(plotIndex)
-
-	elseif plot.CropName then
-		if selectedTool == "Water" then
-			RE.WaterCrop:FireServer(plotIndex)
-		else
-			RE.HarvestCrop:FireServer(plotIndex)
-		end
-
-	else
-		-- Empty unlocked plot
-		if selectedTool == "Plant" and selectedCrop then
-			RE.PlantCrop:FireServer(plotIndex, selectedCrop)
-		else
-			showToast("Open 🛒 Shop, tap ✏ Plant on a seed, then click this plot!", "Info")
-		end
-	end
-end)
-
-print("✅ Farm UI loaded!")
-]]></ProtectedString>
-					</Properties>
-				</Item>
-			</Item>
-		</Item>
-
-		<Item class="StarterGui" referent="SG">
-			<Properties>
-				<string name="Name">StarterGui</string>
-				<bool name="ResetPlayerGuiOnSpawn">false</bool>
-			</Properties>
-		</Item>
-
-		<Item class="SoundService" referent="SS">
-			<Properties>
-				<string name="Name">SoundService</string>
-				<string name="AmbientReverb">NoReverb</string>
-			</Properties>
-		</Item>
-
-		<!-- Players service: CharacterAutoLoads=false in XML so it is false
-		     BEFORE any Script runs — eliminates the race condition where
-		     the player joins and spawns in the air before Lua can set it. -->
-		<Item class="Players" referent="PLRS">
-			<Properties>
-				<string name="Name">Players</string>
-				<bool name="CharacterAutoLoads">false</bool>
-			</Properties>
-		</Item>
-
-	</Item>
+buildShopItems(1)  -- initial build with level 1 crops
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="Workspace" referent="20">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="FilteringEnabled">true</bool>
+      <bool name="NeedsPivotMigration">false</bool>
+    </Properties>
+  </Item>
 </roblox>

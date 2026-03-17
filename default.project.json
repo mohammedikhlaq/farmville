@@ -1,10 +1,38 @@
 {
-  "name": "Adam And Eshaals Farm",
+  "name": "AdamAndEshaalsFarm",
   "tree": {
     "$className": "DataModel",
+
+    "Players": {
+      "$className": "Players",
+      "$properties": {
+        "CharacterAutoLoads": false
+      }
+    },
+
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    },
+
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Brightness": 2,
+        "ClockTime": 10,
+        "GlobalShadows": true
+      }
+    },
+
     "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
       "GameModules": {
         "$className": "Folder",
+        "GameData": {
+          "$path": "src/ReplicatedStorage/GameData.lua"
+        },
         "CropData": {
           "$path": "src/ReplicatedStorage/CropData.lua"
         },
@@ -19,7 +47,12 @@
         }
       }
     },
+
     "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Main": {
+        "$path": "src/ServerScriptService/Main.server.lua"
+      },
       "DataManager": {
         "$path": "src/ServerScriptService/DataManager.server.lua"
       },
@@ -33,14 +66,24 @@
         "$path": "src/ServerScriptService/GameManager.server.lua"
       }
     },
+
     "StarterPlayer": {
+      "$className": "StarterPlayer",
       "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
         "ClientController": {
           "$path": "src/StarterPlayer/StarterPlayerScripts/ClientController.client.lua"
         },
         "FarmUI": {
           "$path": "src/StarterPlayer/StarterPlayerScripts/FarmUI.client.lua"
         }
+      }
+    },
+
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$properties": {
+        "ResetPlayerGuiOnSpawn": false
       }
     }
   }
