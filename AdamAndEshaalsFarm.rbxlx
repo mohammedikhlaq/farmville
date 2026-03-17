@@ -207,8 +207,32 @@ spawnPad.TopSurface        = Enum.SurfaceType.Smooth
 spawnPad.BottomSurface     = Enum.SurfaceType.Smooth
 spawnPad.Parent            = Workspace
 
--- Ground exists — now block character auto-load until full world is ready
-Players.CharacterAutoLoads = false
+-- ══════════════════════════════════════════════════════════════════════════
+--  CHARACTER GUARD — fires the instant any character loads, checks if they
+--  are floating in the air (Y > 10) and teleports them to the SpawnPad.
+--  This is MORE reliable than CharacterAutoLoads = false which has a race
+--  condition in Studio Play Solo mode.
+-- ══════════════════════════════════════════════════════════════════════════
+
+local function guardSpawn(character)
+	local hrp = character:WaitForChild("HumanoidRootPart", 10)
+	if not hrp then return end
+	task.wait()  -- one physics frame so position is settled
+	if hrp.Position.Y > 5 then
+		hrp.CFrame = CFrame.new(0, 5, 0)  -- land on Baseplate
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(guardSpawn)
+	if player.Character then guardSpawn(player.Character) end
+end)
+-- cover players already in-game (Studio Play Solo has player before script)
+for _, p in ipairs(Players:GetPlayers()) do
+	if p.Character then
+		guardSpawn(p.Character)
+	end
+end
 
 -- ── Shared data ───────────────────────────────────────────────────────────
 local GameData = require(RS:WaitForChild("GameModules"):WaitForChild("GameData"))
@@ -389,11 +413,7 @@ if not ok then
 	warn("[Farm] buildWorld error (game still playable on flat ground): " .. tostring(err))
 end
 
--- World done — re-enable character spawning
-Players.CharacterAutoLoads = true
-for _, p in ipairs(Players:GetPlayers()) do
-	p:LoadCharacter()
-end
+print("[Farm] World ready — all players on solid ground.")
 
 -- ── Create Remotes folder ─────────────────────────────────────────────────
 local remotesFolder    = Instance.new("Folder")
