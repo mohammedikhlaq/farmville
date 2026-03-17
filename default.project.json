@@ -53,6 +53,9 @@
       "Main": {
         "$path": "src/ServerScriptService/Main.server.lua"
       },
+      "AnimalManager": {
+        "$path": "src/ServerScriptService/AnimalManager.server.lua"
+      },
       "DataManager": {
         "$path": "src/ServerScriptService/DataManager.server.lua"
       },
