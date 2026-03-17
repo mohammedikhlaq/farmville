@@ -1,0 +1,11 @@
+# Roblox Studio auto-saves and locks
+*.rbxl.lock
+*.rbxlx.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp

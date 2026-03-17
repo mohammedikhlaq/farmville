@@ -1,0 +1,47 @@
+{
+  "name": "Adam And Eshaals Farm",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "GameModules": {
+        "$className": "Folder",
+        "CropData": {
+          "$path": "src/ReplicatedStorage/CropData.lua"
+        },
+        "AnimalData": {
+          "$path": "src/ReplicatedStorage/AnimalData.lua"
+        },
+        "GameConfig": {
+          "$path": "src/ReplicatedStorage/GameConfig.lua"
+        },
+        "Remotes": {
+          "$path": "src/ReplicatedStorage/Remotes.lua"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "DataManager": {
+        "$path": "src/ServerScriptService/DataManager.server.lua"
+      },
+      "FarmManager": {
+        "$path": "src/ServerScriptService/FarmManager.server.lua"
+      },
+      "ShopManager": {
+        "$path": "src/ServerScriptService/ShopManager.server.lua"
+      },
+      "GameManager": {
+        "$path": "src/ServerScriptService/GameManager.server.lua"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "ClientController": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/ClientController.client.lua"
+        },
+        "FarmUI": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/FarmUI.client.lua"
+        }
+      }
+    }
+  }
+}
