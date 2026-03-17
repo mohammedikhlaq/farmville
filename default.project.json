@@ -33,6 +33,9 @@
         "GameData": {
           "$path": "src/ReplicatedStorage/GameData.lua"
         },
+        "BuildingData": {
+          "$path": "src/ReplicatedStorage/BuildingData.lua"
+        },
         "CropData": {
           "$path": "src/ReplicatedStorage/CropData.lua"
         },
@@ -55,6 +58,12 @@
       },
       "AnimalManager": {
         "$path": "src/ServerScriptService/AnimalManager.server.lua"
+      },
+      "NPCFarmManager": {
+        "$path": "src/ServerScriptService/NPCFarmManager.server.lua"
+      },
+      "CityManager": {
+        "$path": "src/ServerScriptService/CityManager.server.lua"
       },
       "DataManager": {
         "$path": "src/ServerScriptService/DataManager.server.lua"
@@ -79,6 +88,9 @@
         },
         "FarmUI": {
           "$path": "src/StarterPlayer/StarterPlayerScripts/FarmUI.client.lua"
+        },
+        "CityUI": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/CityUI.client.lua"
         }
       }
     },
