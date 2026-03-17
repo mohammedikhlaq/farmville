@@ -2,13 +2,12 @@
 -- Three computer-driven farms that auto-cycle through:
 --   Empty → Planted → Growing → Ready → Harvested → Empty → ...
 -- Each harvest deposits coins into the city treasury (CityManager).
--- Farms are placed west, north-west and south of the player farm.
+-- Farms are placed within ~60-80 studs of the player farm so they are clearly visible.
 
-local Workspace     = game:GetService("Workspace")
-local RunService    = game:GetService("RunService")
+local Workspace  = game:GetService("Workspace")
 
 -- ── NPC Farm definitions ─────────────────────────────────────────────────
---   pos    : centre of the farm pad
+--   pos      : centre of the farm pad
 --   cols/rows: plot grid size
 --   cropName : what they grow (cosmetic name)
 --   growTime : seconds per full cycle
@@ -17,7 +16,7 @@ local RunService    = game:GetService("RunService")
 local NPC_FARMS = {
 	{
 		name     = "Hartley Farm",
-		pos      = Vector3.new(-80, 0, -10),
+		pos      = Vector3.new(-55, 0, 0),     -- directly west of player farm
 		cols     = 4, rows = 4,
 		cropName = "Wheat",
 		growTime = 90,
@@ -27,7 +26,7 @@ local NPC_FARMS = {
 	},
 	{
 		name     = "Green Acres",
-		pos      = Vector3.new(-80, 0,  50),
+		pos      = Vector3.new(-60, 0, 55),    -- northwest
 		cols     = 5, rows = 3,
 		cropName = "Corn",
 		growTime = 120,
@@ -37,7 +36,7 @@ local NPC_FARMS = {
 	},
 	{
 		name     = "Sunny Fields",
-		pos      = Vector3.new( 10, 0,  80),
+		pos      = Vector3.new(10, 0, 78),     -- north
 		cols     = 4, rows = 5,
 		cropName = "Tomatoes",
 		growTime = 75,
@@ -50,10 +49,9 @@ local NPC_FARMS = {
 local PLOT_SIZE    = 8
 local PLOT_SPACING = 1
 local STRIDE       = PLOT_SIZE + PLOT_SPACING
-local SIGN_SOUND   = "rbxassetid://9114083260"   -- dig SFX for harvest
 
 -- ── Shared city treasury (set by CityManager once it's ready) ────────────
-local CityTreasury = nil   -- will be bound below
+local CityTreasury = nil
 
 -- ── Build one NPC farm visually ───────────────────────────────────────────
 local function buildNPCFarm(def)
@@ -150,28 +148,26 @@ local function buildNPCFarm(def)
 			tl.TextColor3      = Color3.new(1,1,1)
 			tl.Parent          = gui
 
-			table.insert(plots, { pad = pad, label = tl, crop = nil })
+			table.insert(plots, { pad = pad, label = tl })
 		end
 	end
 
 	return folder, plots
 end
 
--- ── Grow cycle for one NPC farm ───────────────────────────────────────────
+-- ── Growth stages ─────────────────────────────────────────────────────────
 local STAGES = {
-	{ name = "Planted",  color = "Reddish brown",   fraction = 0.0  },
-	{ name = "Sprouting",color = "Bright green",     fraction = 0.25 },
-	{ name = "Growing",  color = "Bright yellowish-green", fraction = 0.5 },
-	{ name = "Ready!",   color = "Bright yellow",    fraction = 0.75 },
+	{ name = "Planted",   color = "Reddish brown",         fraction = 0.00 },
+	{ name = "Sprouting", color = "Bright green",           fraction = 0.25 },
+	{ name = "Growing",   color = "Bright yellowish-green", fraction = 0.50 },
+	{ name = "Ready!",    color = "Bright yellow",          fraction = 0.75 },
 }
 
 local function runFarmCycle(def, folder, plots)
 	task.spawn(function()
-		-- Stagger start so farms don't all cycle in sync
-		task.wait(math.random(5, 25))
+		task.wait(math.random(5, 25))   -- stagger start
 
 		while folder and folder.Parent do
-			-- Stage through growth
 			for _, stage in ipairs(STAGES) do
 				for _, p in ipairs(plots) do
 					p.pad.BrickColor = BrickColor.new(stage.color)
@@ -180,47 +176,46 @@ local function runFarmCycle(def, folder, plots)
 				task.wait(def.growTime * 0.25)
 			end
 
-			-- Harvest — pay into city treasury
+			-- Harvest
 			for _, p in ipairs(plots) do
-				p.pad.BrickColor = BrickColor.new("Reddish brown")
+				p.pad.BrickColor = BrickColor.new(def.padColor)
 				p.label.Text     = "Harvested!"
 			end
 
-			-- Deposit revenue
 			if CityTreasury then
 				CityTreasury.deposit(def.revenue)
 			end
-
 			print(string.format("[NPC Farm] %s harvested — +%d coins", def.name, def.revenue))
 
-			task.wait(8)   -- brief empty period before replanting
+			task.wait(8)   -- brief empty period
 
 			for _, p in ipairs(plots) do
 				p.pad.BrickColor = BrickColor.new("Reddish brown")
 				p.label.Text     = "Empty"
 			end
-
 			task.wait(5)
 		end
 	end)
 end
 
 -- ── Boot ──────────────────────────────────────────────────────────────────
-task.wait(2)   -- wait for world build
+task.wait(2)
 
--- Bind treasury once CityManager has set it up
+-- Bind treasury once CityManager has published the BindableEvent
 task.spawn(function()
-	-- Poll until CityManager exposes the treasury API via a BindableFunction
 	local tries = 0
 	while not CityTreasury and tries < 60 do
 		local bf = Workspace:FindFirstChild("_CityTreasuryAPI")
-		if bf then
-			CityTreasury = { deposit = function(amount)
-				bf:Fire(amount)
-			end}
+		if bf and bf:IsA("BindableEvent") then
+			CityTreasury = { deposit = function(amount) bf:Fire(amount) end }
 		end
 		task.wait(1)
 		tries = tries + 1
+	end
+	if CityTreasury then
+		print("[NPC Farm] Treasury API bound.")
+	else
+		warn("[NPC Farm] Treasury API not found after 60s — revenues will be lost.")
 	end
 end)
 

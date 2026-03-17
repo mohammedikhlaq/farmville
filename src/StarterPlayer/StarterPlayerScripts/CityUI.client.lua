@@ -19,9 +19,10 @@ local GameModules   = RS:WaitForChild("GameModules")
 local BuildingData  = require(GameModules:WaitForChild("BuildingData"))
 
 -- ── Wait for remotes ──────────────────────────────────────────────────────
-local Remotes = RS:WaitForChild("Remotes", 30)
+-- CityManager creates its own CityRemotes folder (separate from farm Remotes)
+local CityRemotes = RS:WaitForChild("CityRemotes", 30)
 local function remote(name)
-	return Remotes:WaitForChild(name, 30)
+	return CityRemotes and CityRemotes:WaitForChild(name, 30)
 end
 
 local RE_BuyPlot        = remote("BuyPlot")
