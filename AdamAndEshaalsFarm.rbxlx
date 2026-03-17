@@ -1479,7 +1479,15 @@ if not ok then
 	warn("[Farm] buildWorld error (game still playable on flat ground): " .. tostring(err))
 end
 
-print("[Farm] World ready — all players on solid ground.")
+-- ── Re-enable character loading now that the world is ready ───────────────
+-- CharacterAutoLoads was set to false in the place file so no one spawned
+-- before the ground existed. Now turn it on and load everyone in.
+Players.CharacterAutoLoads = true
+for _, p in ipairs(Players:GetPlayers()) do
+	p:LoadCharacter()
+end
+
+print("[Farm] World ready — spawning players.")
 
 -- ── Create Remotes folder ─────────────────────────────────────────────────
 local remotesFolder    = Instance.new("Folder")
