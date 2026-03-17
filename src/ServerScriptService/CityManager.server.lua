@@ -19,6 +19,22 @@ local Workspace         = game:GetService("Workspace")
 local GameModules   = RS:WaitForChild("GameModules", 30)
 local BuildingData  = require(GameModules:WaitForChild("BuildingData", 30))
 
+-- ── Coin API (provided by Main.server) ────────────────────────────────────
+local coinAPI = nil
+task.spawn(function()
+	coinAPI = RS:WaitForChild("_CoinAPI", 30)
+end)
+
+local function addCoins(player, amount)
+	if coinAPI then pcall(function() coinAPI:Invoke(player.Name, amount) end) end
+end
+-- Returns true if player had enough coins and they were deducted
+local function deductCoins(player, amount)
+	if not coinAPI then return false end
+	local ok, success = pcall(function() return coinAPI:Invoke(player.Name, -amount) end)
+	return ok and success
+end
+
 -- ── City grid config ──────────────────────────────────────────────────────
 local GRID_COLS     = 10
 local GRID_ROWS     = 10
@@ -350,16 +366,10 @@ RE.BuyPlot.OnServerEvent:Connect(function(player, row, col, confirmed)
 		return
 	end
 
-	-- Find player's coin value (set by Main.server in player's Farm folder)
-	local farmFolder  = Workspace:FindFirstChild("Farm_" .. player.Name)
-	local statsFolder = farmFolder and farmFolder:FindFirstChild("Stats")
-	local coinsVal    = statsFolder and statsFolder:FindFirstChild("Coins")
-
-	if coinsVal and coinsVal.Value < BuildingData.PlotCost then
+	if not deductCoins(player, BuildingData.PlotCost) then
 		RE.CityNotify:FireClient(player, "Not enough coins! Need $"..BuildingData.PlotCost)
 		return
 	end
-	if coinsVal then coinsVal.Value = coinsVal.Value - BuildingData.PlotCost end
 
 	setPlot(row, col, { owner = player.UserId, building = nil })
 	updatePlotVisual(row, col)
@@ -391,15 +401,10 @@ RE.BuildOnPlot.OnServerEvent:Connect(function(player, row, col, buildingKey, dem
 		return
 	end
 
-	local farmFolder  = Workspace:FindFirstChild("Farm_" .. player.Name)
-	local statsFolder = farmFolder and farmFolder:FindFirstChild("Stats")
-	local coinsVal    = statsFolder and statsFolder:FindFirstChild("Coins")
-
-	if coinsVal and coinsVal.Value < bd.cost then
+	if not deductCoins(player, bd.cost) then
 		RE.CityNotify:FireClient(player, "Need $"..bd.cost.." to build "..bd.displayName)
 		return
 	end
-	if coinsVal then coinsVal.Value = coinsVal.Value - bd.cost end
 
 	plot.building = buildingKey
 	setPlot(row, col, plot)
@@ -417,6 +422,7 @@ task.spawn(function()
 		task.wait(BuildingData.IncomeTick)
 		recalcStats()
 
+		-- Pay building income to each plot owner via _CoinAPI
 		for row = 0, GRID_ROWS - 1 do
 			for col = 0, GRID_COLS - 1 do
 				local plot = getPlot(row, col)
@@ -424,10 +430,7 @@ task.spawn(function()
 					local bd    = BuildingData.Buildings[plot.building]
 					local owner = bd and Players:GetPlayerByUserId(plot.owner)
 					if owner and bd and bd.income > 0 then
-						local ff = Workspace:FindFirstChild("Farm_" .. owner.Name)
-						local sf = ff and ff:FindFirstChild("Stats")
-						local cv = sf and sf:FindFirstChild("Coins")
-						if cv then cv.Value = cv.Value + bd.income end
+						addCoins(owner, bd.income)
 					end
 				end
 			end
@@ -439,10 +442,7 @@ task.spawn(function()
 			if #online > 0 then
 				local share = math.floor(CityStats.treasury / #online)
 				for _, p in ipairs(online) do
-					local ff = Workspace:FindFirstChild("Farm_" .. p.Name)
-					local sf = ff and ff:FindFirstChild("Stats")
-					local cv = sf and sf:FindFirstChild("Coins")
-					if cv then cv.Value = cv.Value + share end
+					addCoins(p, share)
 				end
 				CityStats.treasury = CityStats.treasury % #online
 			end

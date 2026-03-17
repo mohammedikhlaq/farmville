@@ -347,6 +347,23 @@ local function notify(player, msg, ntype)
 	RE.Notify:FireClient(player, msg, ntype or "Info")
 end
 
+-- ── Coin API BindableFunction — lets AnimalManager / other scripts add coins
+local coinAPI      = Instance.new("BindableFunction")
+coinAPI.Name       = "_CoinAPI"
+coinAPI.Parent     = RS
+-- Returns: success (bool), newBalance (number)
+-- Pass negative amount to deduct; returns false if insufficient funds.
+coinAPI.OnInvoke = function(playerName, amount)
+	local p = Players:FindFirstChild(playerName)
+	if not p or not PlayerData[p] then return false, 0 end
+	if amount < 0 and PlayerData[p].Coins < math.abs(amount) then
+		return false, PlayerData[p].Coins   -- insufficient funds
+	end
+	PlayerData[p].Coins = PlayerData[p].Coins + amount
+	syncData(p)
+	return true, PlayerData[p].Coins
+end
+
 local function syncData(player)
 	local d = PlayerData[player]
 	if not d then return end
