@@ -6,7 +6,36 @@ local DataStoreService = game:GetService("DataStoreService")
 local RS               = game:GetService("ReplicatedStorage")
 local Workspace        = game:GetService("Workspace")
 
--- Stop characters spawning until the world is ready
+-- ══════════════════════════════════════════════════════════════════════════
+--  IMMEDIATE GROUND — pure Lua, no XML, runs in milliseconds
+--  Character cannot spawn until CharacterAutoLoads = true below, but this
+--  ensures solid ground exists even if buildWorld() later has any error.
+-- ══════════════════════════════════════════════════════════════════════════
+
+local baseplate            = Instance.new("Part")
+baseplate.Name             = "Baseplate"
+baseplate.Size             = Vector3.new(2048, 20, 2048)
+baseplate.CFrame           = CFrame.new(0, -10, 0)
+baseplate.Anchored         = true
+baseplate.Material         = Enum.Material.Grass
+baseplate.BrickColor       = BrickColor.new("Bright green")
+baseplate.TopSurface       = Enum.SurfaceType.Smooth
+baseplate.BottomSurface    = Enum.SurfaceType.Smooth
+baseplate.Parent           = Workspace
+
+local spawnPad             = Instance.new("SpawnLocation")
+spawnPad.Name              = "SpawnLocation"
+spawnPad.Size              = Vector3.new(10, 1, 10)
+spawnPad.CFrame            = CFrame.new(0, 0.5, 0)
+spawnPad.Anchored          = true
+spawnPad.Neutral           = true
+spawnPad.Material          = Enum.Material.SmoothPlastic
+spawnPad.BrickColor        = BrickColor.new("Bright yellow")
+spawnPad.TopSurface        = Enum.SurfaceType.Smooth
+spawnPad.BottomSurface     = Enum.SurfaceType.Smooth
+spawnPad.Parent            = Workspace
+
+-- Ground exists — now block character auto-load until full world is ready
 Players.CharacterAutoLoads = false
 
 -- ── Shared data ───────────────────────────────────────────────────────────
@@ -182,9 +211,13 @@ local function buildWorld()
 	print("🌍 World built — terrain, barn, trees, fence, well all ready!")
 end
 
-buildWorld()   -- ← runs immediately when server starts
+-- Run world builder — pcall so ANY error still lets characters load
+local ok, err = pcall(buildWorld)
+if not ok then
+	warn("[Farm] buildWorld error (game still playable on flat ground): " .. tostring(err))
+end
 
--- World is ready — now allow characters to load
+-- World done — re-enable character spawning
 Players.CharacterAutoLoads = true
 for _, p in ipairs(Players:GetPlayers()) do
 	p:LoadCharacter()

@@ -10,51 +10,12 @@
 		<Item class="Workspace" referent="WS">
 			<Properties>
 				<string name="Name">Workspace</string>
-				<bool name="FilteringEnabled">true</bool>
-				<float name="Gravity">196.2</float>
 			</Properties>
-				<Item class="Terrain" referent="TRN">
+			<Item class="Terrain" referent="TRN">
 				<Properties>
 					<string name="Name">Terrain</string>
 				</Properties>
 			</Item>
-
-			<!-- Large green baseplate — character lands here before any script runs -->
-			<Item class="Part" referent="BASE1">
-				<Properties>
-					<string name="Name">Baseplate</string>
-					<bool name="Anchored">true</bool>
-					<bool name="Locked">true</bool>
-					<CoordinateFrame name="CFrame">
-						<X>0</X><Y>-10</Y><Z>0</Z>
-						<R00>1</R00><R01>0</R01><R02>0</R02>
-						<R10>0</R10><R11>1</R11><R12>0</R12>
-						<R20>0</R20><R21>0</R21><R22>1</R22>
-					</CoordinateFrame>
-					<Vector3 name="Size"><X>2048</X><Y>20</Y><Z>2048</Z></Vector3>
-					<token name="TopSurface">0</token>
-					<token name="BottomSurface">0</token>
-				</Properties>
-			</Item>
-
-			<!-- SpawnLocation — exists before scripts run so player spawns here -->
-			<Item class="SpawnLocation" referent="SL1">
-				<Properties>
-					<string name="Name">SpawnLocation</string>
-					<bool name="Anchored">true</bool>
-					<bool name="Neutral">true</bool>
-					<CoordinateFrame name="CFrame">
-						<X>0</X><Y>0.5</Y><Z>0</Z>
-						<R00>1</R00><R01>0</R01><R02>0</R02>
-						<R10>0</R10><R11>1</R11><R12>0</R12>
-						<R20>0</R20><R21>0</R21><R22>1</R22>
-					</CoordinateFrame>
-					<Vector3 name="Size"><X>10</X><Y>1</Y><Z>10</Z></Vector3>
-					<token name="TopSurface">0</token>
-					<token name="BottomSurface">0</token>
-				</Properties>
-			</Item>
-
 		</Item>
 
 		<Item class="Lighting" referent="LT">
@@ -63,10 +24,6 @@
 				<Color3 name="Ambient"><R>0.5</R><G>0.5</G><B>0.5</B></Color3>
 				<float name="Brightness">2</float>
 				<float name="ClockTime">10</float>
-				<float name="FogEnd">1200</float>
-				<bool name="GlobalShadows">true</bool>
-				<string name="EnvironmentDiffuseScale">1</string>
-				<string name="EnvironmentSpecularScale">1</string>
 			</Properties>
 			<Item class="Sky" referent="SKY">
 				<Properties>
@@ -190,7 +147,36 @@ local DataStoreService = game:GetService("DataStoreService")
 local RS               = game:GetService("ReplicatedStorage")
 local Workspace        = game:GetService("Workspace")
 
--- Stop characters spawning until the world is ready
+-- ══════════════════════════════════════════════════════════════════════════
+--  IMMEDIATE GROUND — pure Lua, no XML, runs in milliseconds
+--  Character cannot spawn until CharacterAutoLoads = true below, but this
+--  ensures solid ground exists even if buildWorld() later has any error.
+-- ══════════════════════════════════════════════════════════════════════════
+
+local baseplate            = Instance.new("Part")
+baseplate.Name             = "Baseplate"
+baseplate.Size             = Vector3.new(2048, 20, 2048)
+baseplate.CFrame           = CFrame.new(0, -10, 0)
+baseplate.Anchored         = true
+baseplate.Material         = Enum.Material.Grass
+baseplate.BrickColor       = BrickColor.new("Bright green")
+baseplate.TopSurface       = Enum.SurfaceType.Smooth
+baseplate.BottomSurface    = Enum.SurfaceType.Smooth
+baseplate.Parent           = Workspace
+
+local spawnPad             = Instance.new("SpawnLocation")
+spawnPad.Name              = "SpawnLocation"
+spawnPad.Size              = Vector3.new(10, 1, 10)
+spawnPad.CFrame            = CFrame.new(0, 0.5, 0)
+spawnPad.Anchored          = true
+spawnPad.Neutral           = true
+spawnPad.Material          = Enum.Material.SmoothPlastic
+spawnPad.BrickColor        = BrickColor.new("Bright yellow")
+spawnPad.TopSurface        = Enum.SurfaceType.Smooth
+spawnPad.BottomSurface     = Enum.SurfaceType.Smooth
+spawnPad.Parent            = Workspace
+
+-- Ground exists — now block character auto-load until full world is ready
 Players.CharacterAutoLoads = false
 
 -- ── Shared data ───────────────────────────────────────────────────────────
@@ -366,9 +352,13 @@ local function buildWorld()
 	print("🌍 World built — terrain, barn, trees, fence, well all ready!")
 end
 
-buildWorld()   -- ← runs immediately when server starts
+-- Run world builder — pcall so ANY error still lets characters load
+local ok, err = pcall(buildWorld)
+if not ok then
+	warn("[Farm] buildWorld error (game still playable on flat ground): " .. tostring(err))
+end
 
--- World is ready — now allow characters to load
+-- World done — re-enable character spawning
 Players.CharacterAutoLoads = true
 for _, p in ipairs(Players:GetPlayers()) do
 	p:LoadCharacter()
