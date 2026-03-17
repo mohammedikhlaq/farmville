@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://api.github.com/search/repositories?q=chicken+MeshId+roblox+language:Lua&per_page=5\")"
+    ]
+  }
+}
