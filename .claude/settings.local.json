@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:devforum.roblox.com)"
+      "WebFetch(domain:devforum.roblox.com)",
+      "WebFetch(domain:gamertweak.com)",
+      "WebFetch(domain:robloxsong.com)",
+      "WebFetch(domain:musiccoder.com)"
     ]
   }
 }
